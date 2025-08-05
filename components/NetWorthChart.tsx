@@ -19,7 +19,10 @@ export function NetWorthChart({ records, currency = 'USD', language = 'zh' }: Ne
     exchangeRate = 1 / getExchangeRate('CNY');
   }
   
-  const chartData = records.map(record => ({
+  // 按日期升序排列用于图表显示
+  const sortedRecords = [...records].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+  const chartData = sortedRecords.map(record => ({
     date: new Date(record.date).toLocaleDateString(language === 'zh' ? 'zh-CN' : 'th-TH', { month: 'short', day: 'numeric' }),
     value: record.totalValue * exchangeRate,
     fullDate: record.date

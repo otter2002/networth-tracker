@@ -13,8 +13,9 @@ interface NetWorthSummaryProps {
 export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: NetWorthSummaryProps) {
   if (records.length === 0) return null;
 
-  const latest = records[records.length - 1];
-  const previous = records.length > 1 ? records[records.length - 2] : null;
+  // records已按日期降序排列，第一个是最新的
+  const latest = records[0];
+  const previous = records.length > 1 ? records[1] : null;
   
   const change = previous ? latest.totalValue - previous.totalValue : 0;
   const changePercent = previous ? (change / previous.totalValue) * 100 : 0;

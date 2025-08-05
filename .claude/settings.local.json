@@ -8,7 +8,14 @@
       "Bash(git push:*)",
       "Bash(del .env.local)",
       "Bash(rm:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(git commit:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:networth-tracker-sandy.vercel.app)",
+      "Bash(timeout 30 npx tsc --noEmit --skipLibCheck)",
+      "Bash(pnpm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": []
   }

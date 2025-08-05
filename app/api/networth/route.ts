@@ -11,6 +11,16 @@ export async function GET() {
       .from(netWorthRecords)
       .orderBy(desc(netWorthRecords.date));
 
+    // 转换数据类型，确保数值字段是数字
+    records = records.map(record => ({
+      ...record,
+      id: typeof record.id === 'string' ? record.id : record.id.toString(),
+      totalValue: typeof record.totalValue === 'string' ? parseFloat(record.totalValue) : record.totalValue,
+      onChainAssets: record.onChainAssets || [],
+      cexAssets: record.cexAssets || [],
+      bankAssets: record.bankAssets || []
+    }));
+
     // 如果没有记录，返回示例数据
     if (records.length === 0) {
       console.log('No records found in database, returning sample data');

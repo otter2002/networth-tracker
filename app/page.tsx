@@ -47,7 +47,7 @@ export default function Dashboard() {
     );
   }
 
-  const latestRecord = records[records.length - 1];
+  const latestRecord = records[0]; // API已按日期降序排列，第一个是最新的
 
   return (
     <div className="min-h-screen bg-gray-50">

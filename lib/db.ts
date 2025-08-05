@@ -5,7 +5,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 const DATABASE_URL = 
   process.env.DATABASE_URL || 
   process.env.POSTGRES_URL || 
-  'postgres://neondb_owner:npg_MV85stDLEWRX@ep-snowy-pine-a19hjq40-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
+  'postgres://neondb_owner:npg_fp6QFIUbgSx9@ep-twilight-bonus-a1qwiq71-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
 
 // 验证连接字符串
 if (!DATABASE_URL || DATABASE_URL === 'your-database-url') {
