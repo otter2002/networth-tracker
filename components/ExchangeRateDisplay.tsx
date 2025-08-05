@@ -39,15 +39,13 @@ export default function ExchangeRateDisplay() {
     const timer = setInterval(updateRates, 60000); // 60秒自动刷新
     return () => clearInterval(timer);
   }, []);
-  useEffect(() => {
-    updateRates();
-  }, []);
 
   return (
     <div className="bg-white shadow rounded-lg p-4 mb-6">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-medium text-gray-900">实时汇率 (对美元)</h3>
         <button
+          type="button"
           onClick={updateRates}
           disabled={loading}
           className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100 disabled:opacity-50"
