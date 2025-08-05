@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { addNetWorthRecord, calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
-import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Trash2, Copy, History } from 'lucide-react';
 import Link from 'next/link';
 import ExchangeRateDisplay from '@/components/ExchangeRateDisplay';
-import { OnChainAsset, CEXAsset, BankAsset } from '@/types';
+import { OnChainAsset, CEXAsset, BankAsset, NetWorthRecord } from '@/types';
 
 export default function AddRecord() {
   const router = useRouter();
@@ -17,6 +17,67 @@ export default function AddRecord() {
     cexAssets: [] as CEXAsset[],
     bankAssets: [] as BankAsset[]
   });
+  const [historicalRecords, setHistoricalRecords] = useState<NetWorthRecord[]>([]);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [templateLoaded, setTemplateLoaded] = useState(false);
+
+  // 获取历史记录
+  useEffect(() => {
+    const fetchHistoricalRecords = async () => {
+      try {
+        const response = await fetch('/api/networth');
+        if (response.ok) {
+          const records = await response.json();
+          setHistoricalRecords(records);
+        }
+      } catch (error) {
+        console.error('Error fetching historical records:', error);
+      }
+    };
+
+    fetchHistoricalRecords();
+  }, []);
+
+  // 使用历史记录作为模板
+  const loadTemplate = (templateRecord: NetWorthRecord) => {
+    // 生成新的ID
+    const generateNewId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    
+    // 深拷贝并更新ID
+    const newOnChainAssets = templateRecord.onChainAssets.map(asset => ({
+      ...asset,
+      id: generateNewId(),
+      positions: asset.positions.map(pos => ({
+        ...pos,
+        id: generateNewId()
+      }))
+    }));
+
+    const newCexAssets = templateRecord.cexAssets.map(asset => ({
+      ...asset,
+      id: generateNewId()
+    }));
+
+    const newBankAssets = templateRecord.bankAssets.map(asset => ({
+      ...asset,
+      id: generateNewId()
+    }));
+
+    setFormData({
+      date: new Date().toISOString().split('T')[0], // 使用今天的日期
+      onChainAssets: newOnChainAssets,
+      cexAssets: newCexAssets,
+      bankAssets: newBankAssets
+    });
+
+    setShowTemplateSelector(false);
+    setTemplateLoaded(true);
+    
+    // 3秒后隐藏成功提示
+    setTimeout(() => {
+      setTemplateLoaded(false);
+    }, 3000);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,7 +190,17 @@ export default function AddRecord() {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* 基本信息 */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">基本信息</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-medium text-gray-900">基本信息</h2>
+              <button
+                type="button"
+                onClick={() => setShowTemplateSelector(true)}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <History className="w-4 h-4 mr-2" />
+                使用历史记录作为模板
+              </button>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 日期
@@ -142,6 +213,13 @@ export default function AddRecord() {
                 required
               />
             </div>
+            {templateLoaded && (
+              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-sm text-green-800">
+                  ✅ 模板已加载成功！请根据需要调整资产信息和数值
+                </p>
+              </div>
+            )}
             <div className="mt-4 p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
                 💡 总价值将根据下方填写的资产自动计算
@@ -550,6 +628,86 @@ export default function AddRecord() {
             </button>
           </div>
         </form>
+
+        {/* 模板选择器模态框 */}
+        {showTemplateSelector && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">选择历史记录作为模板</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowTemplateSelector(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <span className="sr-only">关闭</span>
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="max-h-96 overflow-y-auto">
+                  {historicalRecords.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">暂无历史记录</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {historicalRecords.map((record) => (
+                        <div 
+                          key={record.id} 
+                          className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={() => loadTemplate(record)}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-sm font-medium text-gray-900">
+                                  {new Date(record.date).toLocaleDateString('zh-CN')}
+                                </h4>
+                                <span className="text-sm font-medium text-green-600">
+                                  ${record.totalValue.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-2 text-xs text-gray-600">
+                                {record.onChainAssets.length > 0 && (
+                                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                    {record.onChainAssets.length}个链上钱包
+                                  </span>
+                                )}
+                                {record.cexAssets.length > 0 && (
+                                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
+                                    {record.cexAssets.length}个交易所
+                                  </span>
+                                )}
+                                {record.bankAssets.length > 0 && (
+                                  <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                                    {record.bankAssets.length}个银行账户
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <Copy className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowTemplateSelector(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    取消
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
