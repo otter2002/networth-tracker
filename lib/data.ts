@@ -721,6 +721,7 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     const response = await fetch('/api/exchange-rates');
     if (response.ok) {
       const rates = await response.json();
+      console.log('从API获取的汇率数据:', rates);
       exchangeRatesCache = { ...rates, 'USD': 1 };
       exchangeRatesTimestamp = now;
       return exchangeRatesCache;
@@ -731,13 +732,13 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     const data = await fallbackResponse.json();
     
     if (data.rates) {
-      // 转换为以USD为基准的汇率
+      // exchangerate.host返回的是以USD为基准的汇率，直接使用
       const rates: { [key: string]: number } = { 'USD': 1 };
     
-      // 计算其他货币对USD的汇率
+      // 直接使用汇率数据，无需转换
       Object.entries(data.rates as Record<string, number>).forEach(([currency, rate]) => {
         if (rate && typeof rate === 'number') {
-          rates[currency] = 1 / rate;
+          rates[currency] = rate;
         }
       });
       
@@ -751,12 +752,12 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     console.error('获取汇率失败:', error);
   }
 
-  // 如果API调用失败，返回默认汇率
+  // 如果API调用失败，返回默认汇率（1 USD = X 外币）
   const defaultRates = {
     'USD': 1,
-    'HKD': 0.128,
-    'CNY': 0.138,
-    'THB': 0.0285  // 1 USD ≈ 35 THB
+    'HKD': 7.8,    // 1 USD = 7.8 HKD
+    'CNY': 7.3,    // 1 USD = 7.3 CNY  
+    'THB': 35.0    // 1 USD = 35 THB
   };
   
   return defaultRates;

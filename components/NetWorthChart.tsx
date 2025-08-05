@@ -14,9 +14,9 @@ export function NetWorthChart({ records, currency = 'USD', language = 'zh' }: Ne
   // 货币转换
   let exchangeRate = 1;
   if (currency === 'THB') {
-    exchangeRate = 1 / getExchangeRate('THB');
+    exchangeRate = getExchangeRate('THB');
   } else if (currency === 'CNY') {
-    exchangeRate = 1 / getExchangeRate('CNY');
+    exchangeRate = getExchangeRate('CNY');
   }
   
   // 按日期升序排列用于图表显示

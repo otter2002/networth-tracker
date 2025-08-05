@@ -10,14 +10,38 @@ export async function GET() {
     try {
       const externalRes = await fetch('https://api.currencylayer.com/live?access_key=a28c6b9408ad6bca14f131c23a613e4f');
       const externalData = await externalRes.json();
+      
+      console.log('Currencylayer API response:', externalData);
+      
       if (externalData.success && externalData.quotes) {
         const liveRates: { [key: string]: number } = { USD: 1 };
+        
+        // currencylayer返回的quotes格式：{ "USDCNY": 7.23, "USDHKD": 7.8, "USDTHB": 35.5 }
         Object.entries(externalData.quotes as Record<string, number>).forEach(([pair, rate]) => {
+          // 提取货币代码，例如从"USDCNY"提取"CNY"
           const currency = pair.slice(3);
-          if (rate && typeof rate === 'number') {
+          if (rate && typeof rate === 'number' && currency) {
             liveRates[currency] = rate;
           }
         });
+        
+        console.log('Processed exchange rates:', liveRates);
+        
+        // 清理旧汇率数据（保留最近的100条记录）
+        try {
+          const oldRates = await db
+            .select()
+            .from(exchangeRates)
+            .orderBy(desc(exchangeRates.timestamp))
+            .offset(100);
+          
+          if (oldRates.length > 0) {
+            await db.delete(exchangeRates).where(eq(exchangeRates.id, oldRates[0].id));
+          }
+        } catch (cleanupError) {
+          console.warn('清理旧汇率数据失败:', cleanupError);
+        }
+        
         // 同步写入数据库并返回
         const entries = Object.entries(liveRates).map(([currency, rate]) => ({ currency, rate: rate.toString() }));
         await db.insert(exchangeRates).values(entries);
@@ -25,7 +49,7 @@ export async function GET() {
       }
       // currencylayer无效时抛错，跳转备用API
       throw new Error('currencylayer fetch unsuccessful');
-    } catch {
+    } catch (error) {
       console.warn('currencylayer unavailable or unauthorized, trying exchangerate.host');
       // 使用 exchangerate.host 作为次选
       try {
@@ -55,8 +79,8 @@ export async function GET() {
 
     // 如果数据库中没有汇率记录，返回默认汇率
     if (rates.length === 0) {
-      // 默认汇率: currency per USD
-      const defaultRates = { USD: 1, HKD: 7.8, CNY: 7.3, THB: 35 };
+      // 默认汇率: 1 USD = X 外币
+      const defaultRates = { USD: 1, HKD: 7.8, CNY: 7.3, THB: 35.0 };
       return NextResponse.json(defaultRates);
     }
 

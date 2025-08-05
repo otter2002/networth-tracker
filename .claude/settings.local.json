@@ -15,7 +15,9 @@
       "Bash(timeout 30 npx tsc --noEmit --skipLibCheck)",
       "Bash(pnpm run:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:api.currencylayer.com)"
     ],
     "deny": []
   }
