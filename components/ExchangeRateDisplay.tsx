@@ -36,6 +36,11 @@ export default function ExchangeRateDisplay() {
 
   useEffect(() => {
     updateRates();
+    const timer = setInterval(updateRates, 60000); // 60秒自动刷新
+    return () => clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    updateRates();
   }, []);
 
   return (

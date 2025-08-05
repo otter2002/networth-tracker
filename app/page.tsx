@@ -25,7 +25,9 @@ export default function Dashboard() {
         const response = await fetch('/api/networth');
         if (response.ok) {
           const data = await response.json();
-          setRecords(data);
+          // 按日期降序排序，保证最新记录在前
+          const sorted = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setRecords(sorted);
         } else {
           console.error('Failed to fetch data');
         }
@@ -35,7 +37,6 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -47,7 +48,7 @@ export default function Dashboard() {
     );
   }
 
-  const latestRecord = records[0]; // API已按日期降序排列，第一个是最新的
+  const latestRecord = records[0]; // 已按日期降序排列，第一个是最新的
 
   return (
     <div className="min-h-screen bg-gray-50">
