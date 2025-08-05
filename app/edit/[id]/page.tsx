@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { calculateWalletYield, getExchangeRate, getExchangeRateAsync } from "@/lib/data";
-import { NetWorthRecord, OnChainAsset, CEXAsset, BankAsset } from "@/types";
-import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
+import { NetWorthRecord, OnChainAsset, CEXAsset, BankAsset } from '@/types';
+import { ArrowLeft, Save, Plus, Trash2, Calendar } from 'lucide-react';
+import Link from 'next/link';
 
 export default function EditRecord() {
   const router = useRouter();
   const params = useParams();
   const recordId = params.id as string;
+  
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [record, setRecord] = useState<NetWorthRecord | null>(null);
@@ -18,10 +19,10 @@ export default function EditRecord() {
   useEffect(() => {
     const fetchRecord = async () => {
       try {
-        const response = await fetch("/api/networth");
+        const response = await fetch('/api/networth');
         if (response.ok) {
           const records = await response.json();
-          const foundRecord = records.find((r: NetWorthRecord) => String(r.id) === String(recordId));
+          const foundRecord = records.find((r: NetWorthRecord) => r.id === recordId);
           if (foundRecord) {
             // 确保银行资产数据格式正确
             const migratedRecord = {
@@ -71,40 +72,48 @@ export default function EditRecord() {
         setLoading(false);
       }
     };
+
     fetchRecord();
   }, [recordId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!record) return;
+
     setSaving(true);
     try {
       // 计算总价值
-      const onChainTotal = record.onChainAssets.reduce((sum, asset) => sum + asset.totalValueUSD, 0);
+      const onChainTotal = record.onChainAssets.reduce((sum, asset) => {
+        return sum + asset.totalValueUSD;
+      }, 0);
+      
       const cexTotal = record.cexAssets.reduce((sum, asset) => sum + asset.totalValueUSD, 0);
       const bankTotal = record.bankAssets.reduce((sum, asset) => sum + asset.valueUSD, 0);
       const totalValue = onChainTotal + cexTotal + bankTotal;
+
       // 使用API更新记录
-      const response = await fetch(`/api/networth/${Number(recordId)}`, {
-        method: "PUT",
+      const response = await fetch(`/api/networth/${recordId}`, {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           date: record.date,
           totalValue,
           onChainAssets: record.onChainAssets,
           cexAssets: record.cexAssets,
-          bankAssets: record.bankAssets,
+          bankAssets: record.bankAssets
         }),
       });
+
       if (response.ok) {
-        router.push("/");
+        router.push('/');
       } else {
-        alert("更新记录失败");
+        console.error('Failed to update record');
+        alert('更新记录失败');
       }
     } catch (error) {
-      alert("更新记录出错");
+      console.error('Error updating record:', error);
     } finally {
       setSaving(false);
     }
@@ -114,19 +123,19 @@ export default function EditRecord() {
     if (!record) return;
     const newAsset: OnChainAsset = {
       id: Date.now().toString(),
-      walletAddress: "",
-      remark: "",
+      walletAddress: '',
+      remark: '',
       positions: [],
       totalValueUSD: 0,
       yieldValueUSD: 0,
       totalAPR: 0,
       dailyIncome: 0,
       monthlyIncome: 0,
-      yearlyIncome: 0,
+      yearlyIncome: 0
     };
     setRecord({
       ...record,
-      onChainAssets: [...(record.onChainAssets || []), newAsset],
+      onChainAssets: [...(record.onChainAssets || []), newAsset]
     });
   };
 
@@ -134,12 +143,12 @@ export default function EditRecord() {
     if (!record) return;
     const newAsset: CEXAsset = {
       id: Date.now().toString(),
-      exchange: "binance",
-      totalValueUSD: 0,
+      exchange: 'binance',
+      totalValueUSD: 0
     };
     setRecord({
       ...record,
-      cexAssets: [...(record.cexAssets || []), newAsset],
+      cexAssets: [...(record.cexAssets || []), newAsset]
     });
   };
 
@@ -147,22 +156,36 @@ export default function EditRecord() {
     if (!record) return;
     const newAsset: BankAsset = {
       id: Date.now().toString(),
-      institution: "za bank",
-      depositType: "活期",
-      currency: "USD",
+      institution: 'za bank',
+      depositType: '活期',
+      currency: 'USD',
       amount: 0,
       exchangeRate: 1,
-      valueUSD: 0,
+      valueUSD: 0
     };
     setRecord({
       ...record,
-      bankAssets: [...(record.bankAssets || []), newAsset],
+      bankAssets: [...(record.bankAssets || []), newAsset]
     });
   };
-  if (loading || !record) {
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-500 text-lg">加载中...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!record) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900">记录未找到</h2>
+          <Link href="/" className="text-blue-600 hover:text-blue-800">
+            返回首页
+          </Link>
+        </div>
       </div>
     );
   }
@@ -173,240 +196,109 @@ export default function EditRecord() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-6">
-            <Link href="/" className="mr-4 p-2 text-gray-400 hover:text-gray-600">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">编辑净资产记录</h1>
-              <p className="text-sm text-gray-600">
-                {new Date(record.date).toLocaleDateString("zh-CN")}
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
-
-export default function EditRecord() {
-"use client";
-
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { calculateWalletYield, getExchangeRate, getExchangeRateAsync } from "@/lib/data";
-import { NetWorthRecord, OnChainAsset, CEXAsset, BankAsset } from "@/types";
-import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
-
-export default function EditRecord() {
-  const router = useRouter();
-  const params = useParams();
-  const recordId = params.id as string;
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [record, setRecord] = useState<NetWorthRecord | null>(null);
-
-  useEffect(() => {
-    const fetchRecord = async () => {
-      try {
-        const response = await fetch("/api/networth");
-        if (response.ok) {
-          const records = await response.json();
-          const foundRecord = records.find((r: NetWorthRecord) => String(r.id) === String(recordId));
-          if (foundRecord) {
-            // 确保银行资产数据格式正确
-            const migratedRecord = {
-              ...foundRecord,
-              bankAssets: (foundRecord.bankAssets || []).map((asset: any) => {
-                // 如果是旧格式，转换为新格式
-                if (asset.fiatCurrencies && !asset.currency) {
-                  const currency = Object.keys(asset.fiatCurrencies)[0];
-                  const amount = asset.fiatCurrencies[currency];
-                  const exchangeRate = getExchangeRate(currency);
-                  return {
-                    id: asset.id,
-                    institution: asset.institution === "农行" ? "农业银行" :
-                      asset.institution === "民生" ? "民生银行" :
-                      asset.institution === "曼谷" ? "bkk bank" : asset.institution,
-                    depositType: "活期",
-                    currency: currency as any,
-                    amount: amount,
-                    exchangeRate: exchangeRate,
-                    valueUSD: amount * exchangeRate,
-                  };
-                }
-                // 如果已经是新格式，确保有必要的字段
-                return {
-                  ...asset,
-                  valueUSD: asset.valueUSD || 0,
-                  amount: asset.amount || 0,
-                  exchangeRate: asset.exchangeRate || 1,
-                  depositType: asset.depositType || "活期",
-                  currency: asset.currency || "USD",
-                };
-              }),
-            };
-            setRecord(migratedRecord);
-          } else {
-            alert("记录未找到");
-            router.push("/");
-          }
-        } else {
-          alert("获取记录失败");
-          router.push("/");
-        }
-      } catch (error) {
-        alert("获取记录失败");
-        router.push("/");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRecord();
-  }, [recordId, router]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!record) return;
-    setSaving(true);
-    try {
-      // 计算总价值
-      const onChainTotal = record.onChainAssets.reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-      const cexTotal = record.cexAssets.reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-      const bankTotal = record.bankAssets.reduce((sum, asset) => sum + asset.valueUSD, 0);
-      const totalValue = onChainTotal + cexTotal + bankTotal;
-      // 使用API更新记录
-      const response = await fetch(`/api/networth/${Number(recordId)}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          date: record.date,
-          totalValue,
-          onChainAssets: record.onChainAssets,
-          cexAssets: record.cexAssets,
-          bankAssets: record.bankAssets,
-        }),
-      });
-      if (response.ok) {
-        router.push("/");
-      } else {
-        alert("更新记录失败");
-      }
-    } catch (error) {
-      alert("更新记录出错");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const addOnChainAsset = () => {
-    if (!record) return;
-    const newAsset: OnChainAsset = {
-      id: Date.now().toString(),
-      walletAddress: "",
-      remark: "",
-      positions: [],
-      totalValueUSD: 0,
-      yieldValueUSD: 0,
-      totalAPR: 0,
-      dailyIncome: 0,
-      monthlyIncome: 0,
-      yearlyIncome: 0,
-    };
-    setRecord({
-      ...record,
-      onChainAssets: [...(record.onChainAssets || []), newAsset],
-    });
-  };
-
-  const addCEXAsset = () => {
-    if (!record) return;
-    const newAsset: CEXAsset = {
-      id: Date.now().toString(),
-      exchange: "binance",
-      totalValueUSD: 0,
-    };
-    setRecord({
-      ...record,
-      cexAssets: [...(record.cexAssets || []), newAsset],
-    });
-  };
-
-  const addBankAsset = () => {
-    if (!record) return;
-    const newAsset: BankAsset = {
-      id: Date.now().toString(),
-      institution: "za bank",
-      depositType: "活期",
-      currency: "USD",
-      amount: 0,
-      exchangeRate: 1,
-      valueUSD: 0,
-    };
-    setRecord({
-      ...record,
-      bankAssets: [...(record.bankAssets || []), newAsset],
-    });
-  };
-
-  if (loading || !record) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-500 text-lg">加载中...</div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-6">
-            <Link href="/" className="mr-4 p-2 text-gray-400 hover:text-gray-600">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">编辑净资产记录</h1>
-              <p className="text-sm text-gray-600">
-                {new Date(record.date).toLocaleDateString("zh-CN")}
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* 链上资产、中心化交易所资产、银行和券商资产表单内容... */}
-          {/* ...表单内容省略，保留原有表单结构... */}
-          <div className="flex justify-end space-x-4">
             <Link
               href="/"
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="mr-4 p-2 text-gray-400 hover:text-gray-600"
             >
-              取消
+              <ArrowLeft className="w-5 h-5" />
             </Link>
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {saving ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              ) : (
-                <Save className="w-4 h-4 mr-2" />
-              )}
-              保存更改
-            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">编辑净资产记录</h1>
+              <p className="text-sm text-gray-600">
+                {new Date(record.date).toLocaleDateString('zh-CN')}
+              </p>
+            </div>
           </div>
-        </form>
-      </main>
-    </div>
-  );
-}
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* 基本信息 */}
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">基本信息</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  日期
+                </label>
+                <input
+                  type="date"
+                  value={record.date}
+                  onChange={(e) => setRecord({ ...record, date: e.target.value })}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  总价值 (USD)
+                </label>
+                <div className="mt-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium">
+                  ${(() => {
+                    const onChainTotal = ((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
+                    const cexTotal = ((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
+                    const bankTotal = ((Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
+                    return (onChainTotal + cexTotal + bankTotal).toFixed(2);
+                  })()}
+                </div>
+                <p className="mt-1 text-xs text-gray-500">总价值根据下方资产自动计算</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 链上资产 */}
+          <div className="bg-white shadow rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-medium text-gray-900">链上资产</h2>
+              <button
+                type="button"
+                onClick={addOnChainAsset}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                添加钱包
+              </button>
+            </div>
+            {(record.onChainAssets || []).map((asset, index) => (
+              <div key={asset.id} className="border rounded-lg p-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">钱包地址</label>
+                    <input
+                      type="text"
+                      value={asset.walletAddress}
+                                             onChange={(e) => {
+                         const newAssets = [...(record.onChainAssets || [])];
+                         newAssets[index].walletAddress = e.target.value;
+                         setRecord({ ...record, onChainAssets: newAssets });
+                       }}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="0x..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">备注名</label>
+                    <input
+                      type="text"
+                      value={asset.remark}
+                                             onChange={(e) => {
+                         const newAssets = [...(record.onChainAssets || [])];
+                         newAssets[index].remark = e.target.value;
+                         setRecord({ ...record, onChainAssets: newAssets });
+                       }}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="钱包备注"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">总价值 (USD)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={asset.totalValueUSD}
+                      onChange={(e) => {
+                        const newAssets = [...(record.onChainAssets || [])];
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setRecord({ ...record, onChainAssets: newAssets });
                       }}
@@ -756,4 +648,4 @@ export default function EditRecord() {
       </main>
     </div>
   );
-} 
+}
