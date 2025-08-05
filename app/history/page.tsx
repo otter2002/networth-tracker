@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAllNetWorthRecords, deleteNetWorthRecord } from '@/lib/data';
 import { NetWorthRecord } from '@/types';
 import { ArrowLeft, Edit, Trash2, Calendar, DollarSign, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
@@ -11,15 +10,42 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const data = getAllNetWorthRecords();
-    setRecords(data);
-    setLoading(false);
+    fetchRecords();
   }, []);
 
-  const handleDelete = (id: string) => {
+  const fetchRecords = async () => {
+    try {
+      const response = await fetch('/api/networth');
+      if (response.ok) {
+        const data = await response.json();
+        setRecords(data.records || []);
+      } else {
+        console.error('Failed to fetch records');
+      }
+    } catch (error) {
+      console.error('Error fetching records:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
     if (confirm('确定要删除这条记录吗？')) {
-      deleteNetWorthRecord(id);
-      setRecords(getAllNetWorthRecords());
+      try {
+        const response = await fetch(`/api/networth/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          // 重新获取数据
+          fetchRecords();
+        } else {
+          alert('删除失败，请重试');
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+        alert('删除失败，请重试');
+      }
     }
   };
 
