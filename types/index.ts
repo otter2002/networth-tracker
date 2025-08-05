@@ -41,7 +41,7 @@ export interface BankAsset {
 
 // 净资产记录
 export interface NetWorthRecord {
-  id: number; // 数据库中是serial类型，应该是数字
+  id: string; // 使用字符串ID以保持一致性
   date: string;
   totalValue: number;
   onChainAssets: OnChainAsset[];

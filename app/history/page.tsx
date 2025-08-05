@@ -30,7 +30,7 @@ export default function HistoryPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (confirm('确定要删除这条记录吗？')) {
       try {
         const response = await fetch(`/api/networth/${id}`, {
