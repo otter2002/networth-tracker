@@ -12,6 +12,12 @@ export async function GET() {
       .from(exchangeRates)
       .orderBy(desc(exchangeRates.timestamp)); // 获取所有记录并按时间降序
 
+    // 如果数据库中没有汇率记录，返回默认汇率
+    if (rates.length === 0) {
+      const defaultRates = { USD: 1, HKD: 0.128, CNY: 0.138, THB: 0.0285 };
+      return NextResponse.json(defaultRates);
+    }
+
     // 按货币分组，获取每种货币的最新汇率
     const latestRates: { [key: string]: number } = {};
     rates.forEach((rate: any) => {
@@ -36,7 +42,6 @@ export async function POST(request: NextRequest) {
     if (!rates || typeof rates !== 'object') {
       return NextResponse.json({ error: 'Invalid rates data' }, { status: 400 });
     }
-
 
     // 批量插入汇率数据，确保rate为字符串（数据库schema要求string），但先parseFloat再toString
     const rateEntries = Object.entries(rates).map(([currency, rate]) => ({
