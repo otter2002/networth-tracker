@@ -15,7 +15,7 @@ export async function GET() {
         Object.entries(externalData.quotes as Record<string, number>).forEach(([pair, rate]) => {
           const currency = pair.slice(3);
           if (rate && typeof rate === 'number') {
-            liveRates[currency] = 1 / rate; // 转为 USD per currency
+            liveRates[currency] = rate; // 直接使用 currency per USD
           }
         });
         // 同步写入数据库
