@@ -5,9 +5,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@neondatabase/serverless']
   },
   // Vercel optimizations
-  swcMinify: true,
-  // Enable static exports for better performance
-  output: 'standalone'
+  swcMinify: true
 }
 
 module.exports = nextConfig 
