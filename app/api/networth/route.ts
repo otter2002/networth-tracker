@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { netWorthRecords } from '@/lib/schema';
 import { desc } from 'drizzle-orm';
+import { NetWorthRecord } from '@/types';
 
 // GET - 获取所有净资产记录 (Updated for Neon DB)
 export async function GET() {
@@ -12,17 +13,17 @@ export async function GET() {
       .orderBy(desc(netWorthRecords.date));
 
     // 转换数据类型，确保数值字段是数字
-    records = records.map(record => ({
-      ...record,
+    const transformedRecords: NetWorthRecord[] = records.map(record => ({
       id: typeof record.id === 'string' ? record.id : record.id.toString(),
+      date: record.date,
       totalValue: typeof record.totalValue === 'string' ? parseFloat(record.totalValue) : record.totalValue,
-      onChainAssets: record.onChainAssets || [],
-      cexAssets: record.cexAssets || [],
-      bankAssets: record.bankAssets || []
+      onChainAssets: record.onChainAssets as any || [],
+      cexAssets: record.cexAssets as any || [],
+      bankAssets: record.bankAssets as any || []
     }));
 
     // 如果没有记录，返回示例数据
-    if (records.length === 0) {
+    if (transformedRecords.length === 0) {
       console.log('No records found in database, returning sample data');
       const sampleRecord = {
         id: 1,
@@ -92,7 +93,7 @@ export async function GET() {
       return NextResponse.json([sampleRecord]);
     }
 
-    return NextResponse.json(records);
+    return NextResponse.json(transformedRecords);
   } catch (error) {
     console.error('Error fetching net worth records:', error);
     console.error('Database connection error, returning sample data');
