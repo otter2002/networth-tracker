@@ -6,7 +6,6 @@ import { AssetBreakdown } from '@/components/AssetBreakdown';
 import { AssetComposition } from '@/components/AssetComposition';
 import { NetWorthSummary } from '@/components/NetWorthSummary';
 import { YieldSummary } from '@/components/YieldSummary';
-import { getAllNetWorthRecords, initializeData, getExchangeRate } from '@/lib/data';
 import { NetWorthRecord } from '@/types';
 import { Plus, BarChart3, PieChart, TrendingUp, Wallet, Building2, Banknote, Calendar } from 'lucide-react';
 import Link from 'next/link';
@@ -20,10 +19,24 @@ export default function Dashboard() {
   const [currency, setCurrency] = useState<'USD' | 'THB' | 'CNY'>('USD');
 
   useEffect(() => {
-    initializeData();
-    const data = getAllNetWorthRecords();
-    setRecords(data);
-    setLoading(false);
+    // 从API获取数据
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/networth');
+        if (response.ok) {
+          const data = await response.json();
+          setRecords(data);
+        } else {
+          console.error('Failed to fetch data');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (loading) {

@@ -40,8 +40,20 @@ export default function AddRecord() {
         bankAssets: formData.bankAssets
       };
 
-      addNetWorthRecord(record);
-      router.push('/');
+      // 使用API添加记录
+      const response = await fetch('/api/networth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(record),
+      });
+
+      if (response.ok) {
+        router.push('/');
+      } else {
+        console.error('Failed to add record');
+      }
     } catch (error) {
       console.error('Error adding record:', error);
     } finally {
