@@ -711,17 +711,27 @@ const CACHE_DURATION = 60 * 60 * 1000; // 1小时缓存
 export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
   const now = Date.now();
   
-  // 如果缓存还在有效期内，直接返回缓存
-  if (now - exchangeRatesTimestamp < CACHE_DURATION && Object.keys(exchangeRatesCache).length > 1) {
-    return exchangeRatesCache;
-  }
+  // 暂时禁用缓存以确保获取最新汇率
+  // if (now - exchangeRatesTimestamp < CACHE_DURATION && Object.keys(exchangeRatesCache).length > 1) {
+  //   return exchangeRatesCache;
+  // }
 
   try {
-    // 从后端API获取汇率数据
-    const response = await fetch('/api/exchange-rates');
+    // 先尝试直接API
+    let response = await fetch('/api/exchange-rates-direct');
     if (response.ok) {
       const rates = await response.json();
-      console.log('从API获取的汇率数据:', rates);
+      console.log('从直接API获取的汇率数据:', rates);
+      exchangeRatesCache = { ...rates, 'USD': 1 };
+      exchangeRatesTimestamp = now;
+      return exchangeRatesCache;
+    }
+    
+    // 如果直接API失败，尝试原来的API
+    response = await fetch('/api/exchange-rates');
+    if (response.ok) {
+      const rates = await response.json();
+      console.log('从原API获取的汇率数据:', rates);
       exchangeRatesCache = { ...rates, 'USD': 1 };
       exchangeRatesTimestamp = now;
       return exchangeRatesCache;

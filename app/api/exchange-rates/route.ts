@@ -8,10 +8,21 @@ export async function GET() {
   try {
     // 外部实时汇率优先：currencylayer
     try {
-      const externalRes = await fetch('https://api.currencylayer.com/live?access_key=a28c6b9408ad6bca14f131c23a613e4f');
-      const externalData = await externalRes.json();
+      console.log('正在调用currencylayer API...');
+      const externalRes = await fetch('https://api.currencylayer.com/live?access_key=a28c6b9408ad6bca14f131c23a613e4f', {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
       
-      console.log('Currencylayer API response:', externalData);
+      console.log('API响应状态:', externalRes.status, externalRes.statusText);
+      
+      if (!externalRes.ok) {
+        throw new Error(`HTTP错误: ${externalRes.status}`);
+      }
+      
+      const externalData = await externalRes.json();
+      console.log('Currencylayer API完整响应:', JSON.stringify(externalData, null, 2));
       
       if (externalData.success && externalData.quotes) {
         const liveRates: { [key: string]: number } = { USD: 1 };
@@ -47,9 +58,11 @@ export async function GET() {
         await db.insert(exchangeRates).values(entries);
         return NextResponse.json(liveRates);
       }
-      // currencylayer无效时抛错，跳转备用API
+      // currencylayer API失败
+      console.error('Currencylayer API失败:', externalData);
       throw new Error('currencylayer fetch unsuccessful');
     } catch (error) {
+      console.error('Currencylayer调用出错:', error);
       console.warn('currencylayer unavailable or unauthorized, trying exchangerate.host');
       // 使用 exchangerate.host 作为次选
       try {

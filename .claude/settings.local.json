@@ -17,7 +17,8 @@
       "Bash(npx tsc:*)",
       "Bash(npx tsx:*)",
       "Bash(curl:*)",
-      "WebFetch(domain:api.currencylayer.com)"
+      "WebFetch(domain:api.currencylayer.com)",
+      "WebFetch(domain:api.exchangerate-api.com)"
     ],
     "deny": []
   }
