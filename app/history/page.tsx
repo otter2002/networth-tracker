@@ -50,16 +50,21 @@ export default function HistoryPage() {
     }
   };
 
-  const formatValue = (value: number | undefined) => {
-    if (!value || isNaN(value)) {
+  const formatValue = (value: number | string | undefined) => {
+    if (!value) {
       return '$0';
     }
-    if (value >= 1000000) {
-      return `$${(value / 1000000).toFixed(2)}M`;
-    } else if (value >= 1000) {
-      return `$${(value / 1000).toFixed(0)}K`;
+    // 确保转换为数字
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numValue)) {
+      return '$0';
     }
-    return `$${value.toFixed(0)}`;
+    if (numValue >= 1000000) {
+      return `$${(numValue / 1000000).toFixed(2)}M`;
+    } else if (numValue >= 1000) {
+      return `$${(numValue / 1000).toFixed(0)}K`;
+    }
+    return `$${numValue.toFixed(0)}`;
   };
 
   if (loading) {
@@ -113,11 +118,7 @@ export default function HistoryPage() {
                     <div className="flex items-center">
                       <Calendar className="w-5 h-5 text-gray-400 mr-2" />
                       <span className="text-lg font-semibold text-gray-900">
-                        {new Date(record.date).toLocaleDateString('zh-CN', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        {record.date}
                       </span>
                     </div>
                     <div className="flex items-center">
@@ -150,7 +151,10 @@ export default function HistoryPage() {
                   <div className="bg-blue-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-blue-800">链上资产</h3>
                     <p className="text-lg font-semibold text-blue-900">
-                      {formatValue(((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => sum + ((asset as any).totalValueUSD ?? 0), 0)) as number)}
+                      {formatValue(((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => {
+                        const value = (asset as any).totalValueUSD ?? 0;
+                        return sum + (typeof value === 'string' ? parseFloat(value) || 0 : value);
+                      }, 0))}
                     </p>
                     <p className="text-sm text-blue-600">
                       {Array.isArray(record.onChainAssets) ? record.onChainAssets.length : Object.keys(record.onChainAssets || {}).length} 个钱包
@@ -159,7 +163,10 @@ export default function HistoryPage() {
                   <div className="bg-green-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-green-800">交易所资产</h3>
                     <p className="text-lg font-semibold text-green-900">
-                      {formatValue(((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => sum + ((asset as any).totalValueUSD ?? 0), 0)) as number)}
+                      {formatValue(((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => {
+                        const value = (asset as any).totalValueUSD ?? 0;
+                        return sum + (typeof value === 'string' ? parseFloat(value) || 0 : value);
+                      }, 0))}
                     </p>
                     <p className="text-sm text-green-600">
                       {Array.isArray(record.cexAssets) ? record.cexAssets.length : Object.keys(record.cexAssets || {}).length} 个交易所
@@ -168,7 +175,10 @@ export default function HistoryPage() {
                   <div className="bg-purple-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-purple-800">银行资产</h3>
                     <p className="text-lg font-semibold text-purple-900">
-                      {formatValue(((Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {})).reduce((sum, asset) => sum + ((asset as any).valueUSD ?? 0), 0)) as number)}
+                      {formatValue(((Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {})).reduce((sum, asset) => {
+                        const value = (asset as any).valueUSD ?? 0;
+                        return sum + (typeof value === 'string' ? parseFloat(value) || 0 : value);
+                      }, 0))}
                     </p>
                     <p className="text-sm text-purple-600">
                       {Array.isArray(record.bankAssets) ? record.bankAssets.length : Object.keys(record.bankAssets || {}).length} 个机构
