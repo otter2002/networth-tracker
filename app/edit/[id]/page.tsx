@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getAllNetWorthRecords, deleteNetWorthRecord, addNetWorthRecord, calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
+import { calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
 import { NetWorthRecord, OnChainAsset, CEXAsset, BankAsset } from '@/types';
 import { ArrowLeft, Save, Plus, Trash2, Calendar } from 'lucide-react';
 import Link from 'next/link';
@@ -17,47 +17,63 @@ export default function EditRecord() {
   const [record, setRecord] = useState<NetWorthRecord | null>(null);
 
   useEffect(() => {
-    const records = getAllNetWorthRecords();
-    const foundRecord = records.find(r => r.id === recordId);
-    if (foundRecord) {
-      // 确保银行资产数据格式正确
-      const migratedRecord = {
-        ...foundRecord,
-        bankAssets: (foundRecord.bankAssets || []).map((asset: any) => {
-          // 如果是旧格式，转换为新格式
-          if (asset.fiatCurrencies && !asset.currency) {
-            const currency = Object.keys(asset.fiatCurrencies)[0];
-            const amount = asset.fiatCurrencies[currency];
-            const exchangeRate = getExchangeRate(currency);
-            return {
-              id: asset.id,
-              institution: asset.institution === '农行' ? '农业银行' : 
-                         asset.institution === '民生' ? '民生银行' : 
-                         asset.institution === '曼谷' ? 'bkk bank' : asset.institution,
-              depositType: '活期',
-              currency: currency as any,
-              amount: amount,
-              exchangeRate: exchangeRate,
-              valueUSD: amount * exchangeRate
+    const fetchRecord = async () => {
+      try {
+        const response = await fetch('/api/networth');
+        if (response.ok) {
+          const records = await response.json();
+      const foundRecord = records.find((r: NetWorthRecord) => String(r.id) === String(recordId));
+          if (foundRecord) {
+            // 确保银行资产数据格式正确
+            const migratedRecord = {
+              ...foundRecord,
+              bankAssets: (foundRecord.bankAssets || []).map((asset: any) => {
+                // 如果是旧格式，转换为新格式
+                if (asset.fiatCurrencies && !asset.currency) {
+                  const currency = Object.keys(asset.fiatCurrencies)[0];
+                  const amount = asset.fiatCurrencies[currency];
+                  const exchangeRate = getExchangeRate(currency);
+                  return {
+                    id: asset.id,
+                    institution: asset.institution === '农行' ? '农业银行' : 
+                               asset.institution === '民生' ? '民生银行' : 
+                               asset.institution === '曼谷' ? 'bkk bank' : asset.institution,
+                    depositType: '活期',
+                    currency: currency as any,
+                    amount: amount,
+                    exchangeRate: exchangeRate,
+                    valueUSD: amount * exchangeRate
+                  };
+                }
+                // 如果已经是新格式，确保有必要的字段
+                return {
+                  ...asset,
+                  valueUSD: asset.valueUSD || 0,
+                  amount: asset.amount || 0,
+                  exchangeRate: asset.exchangeRate || 1,
+                  depositType: asset.depositType || '活期',
+                  currency: asset.currency || 'USD'
+                };
+              })
             };
+            setRecord(migratedRecord);
+          } else {
+            alert('记录未找到');
+            router.push('/');
           }
-          // 如果已经是新格式，确保有必要的字段
-          return {
-            ...asset,
-            valueUSD: asset.valueUSD || 0,
-            amount: asset.amount || 0,
-            exchangeRate: asset.exchangeRate || 1,
-            depositType: asset.depositType || '活期',
-            currency: asset.currency || 'USD'
-          };
-        })
-      };
-      setRecord(migratedRecord);
-    } else {
-      alert('记录未找到');
-      router.push('/');
-    }
-    setLoading(false);
+        } else {
+          console.error('Failed to fetch records');
+        }
+      } catch (error) {
+        console.error('Error fetching record:', error);
+        alert('获取记录失败');
+        router.push('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecord();
   }, [recordId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,25 +83,35 @@ export default function EditRecord() {
     setSaving(true);
     try {
       // 计算总价值
-      const onChainTotal = ((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => {
-        return sum + ((asset as any).value ?? (asset as any).amount ?? 0);
-      }, 0)) as number;
+      const onChainTotal = record.onChainAssets.reduce((sum, asset) => {
+        return sum + asset.totalValueUSD;
+      }, 0);
       
-      const cexTotal = ((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
-      const bankTotal = ((Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
+      const cexTotal = record.cexAssets.reduce((sum, asset) => sum + asset.totalValueUSD, 0);
+      const bankTotal = record.bankAssets.reduce((sum, asset) => sum + asset.valueUSD, 0);
       const totalValue = onChainTotal + cexTotal + bankTotal;
 
-      // 删除原记录
-      deleteNetWorthRecord(recordId);
-      // 添加更新后的记录
-      addNetWorthRecord({
-        date: record.date,
-        totalValue,
-        onChainAssets: record.onChainAssets,
-        cexAssets: record.cexAssets,
-        bankAssets: record.bankAssets
+      // 使用API更新记录
+        const response = await fetch(`/api/networth/${Number(recordId)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          date: record.date,
+          totalValue,
+          onChainAssets: record.onChainAssets,
+          cexAssets: record.cexAssets,
+          bankAssets: record.bankAssets
+        }),
       });
-      router.push('/');
+
+      if (response.ok) {
+        router.push('/');
+      } else {
+        console.error('Failed to update record');
+        alert('更新记录失败');
+      }
     } catch (error) {
       console.error('Error updating record:', error);
     } finally {
