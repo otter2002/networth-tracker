@@ -6,13 +6,14 @@ import { desc } from 'drizzle-orm';
 // GET - 获取所有净资产记录 (Updated for Neon DB)
 export async function GET() {
   try {
-    const records = await db
+    let records = await db
       .select()
       .from(netWorthRecords)
       .orderBy(desc(netWorthRecords.date));
 
     // 如果没有记录，返回示例数据
     if (records.length === 0) {
+      console.log('No records found in database, returning sample data');
       const sampleRecord = {
         id: 1,
         date: '2024-12-01',
@@ -84,7 +85,50 @@ export async function GET() {
     return NextResponse.json(records);
   } catch (error) {
     console.error('Error fetching net worth records:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Database connection error, returning sample data');
+    
+    // 如果数据库连接失败，返回示例数据
+    const sampleRecord = {
+      id: 1,
+      date: '2024-12-01',
+      totalValue: 1500000,
+      onChainAssets: [
+        {
+          id: '1',
+          walletAddress: '0x1234...abcd',
+          remark: 'DeFi Yield Farm (Fallback)',
+          positions: [
+            { id: '1', token: 'USDC', valueUSD: 50000, apr: 8.5 },
+            { id: '2', token: 'ETH', valueUSD: 100000, apr: 4.2 },
+            { id: '3', token: 'WBTC', valueUSD: 75000, apr: 3.8 }
+          ],
+          totalValueUSD: 225000,
+          yieldValueUSD: 225000,
+          totalAPR: 5.8,
+          dailyIncome: 35.62,
+          monthlyIncome: 1068.6,
+          yearlyIncome: 13040.0
+        }
+      ],
+      cexAssets: [
+        { id: '1', exchange: 'binance', totalValueUSD: 400000 }
+      ],
+      bankAssets: [
+        {
+          id: '1',
+          institution: '农业银行',
+          depositType: '定期',
+          currency: 'CNY',
+          amount: 2000000,
+          exchangeRate: 0.14,
+          valueUSD: 280000
+        }
+      ],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    return NextResponse.json([sampleRecord]);
   }
 }
 
