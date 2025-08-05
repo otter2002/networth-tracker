@@ -1,6 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+  // 密码弹窗相关
+  const [auth, setAuth] = useState(false);
+  const [showPwd, setShowPwd] = useState(true);
+  const [pwd, setPwd] = useState('');
+  const pwdInputRef = useRef<HTMLInputElement>(null);
+  // 密码校验
+  useEffect(() => {
+    if (showPwd && pwdInputRef.current) {
+      pwdInputRef.current.focus();
+    }
+  }, [showPwd]);
+
+  const handlePwdSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pwd === '675258') {
+      setAuth(true);
+      setShowPwd(false);
+    } else {
+      alert('密码错误');
+      setPwd('');
+      if (pwdInputRef.current) pwdInputRef.current.focus();
+    }
+  };
 import { useRouter } from 'next/navigation';
 import { addNetWorthRecord, calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
 import { ArrowLeft, Save, Plus, Trash2, Copy, History } from 'lucide-react';
@@ -168,6 +191,27 @@ export default function AddRecord() {
       bankAssets: [...prev.bankAssets, newAsset]
     }));
   };
+
+  // 密码弹窗
+  if (showPwd || !auth) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <form onSubmit={handlePwdSubmit} className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center min-w-[320px]">
+          <h2 className="text-lg font-semibold mb-4">请输入访问密码</h2>
+          <input
+            ref={pwdInputRef}
+            type="password"
+            value={pwd}
+            onChange={e => setPwd(e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 mb-4 w-full text-center"
+            placeholder="请输入密码"
+            autoFocus
+          />
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">确认</button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
