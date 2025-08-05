@@ -151,10 +151,14 @@ export default function HistoryPage() {
                   <div className="bg-blue-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-blue-800">链上资产</h3>
                     <p className="text-lg font-semibold text-blue-900">
-                      {formatValue(((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => {
-                        const value = (asset as any).totalValueUSD ?? 0;
-                        return sum + (typeof value === 'string' ? parseFloat(value) || 0 : value);
-                      }, 0))}
+                      {formatValue(
+                        (Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {}))
+                          .reduce((sum: number, asset: any) => {
+                            const value = asset.totalValueUSD ?? 0;
+                            const numValue = typeof value === 'string' ? parseFloat(value) || 0 : (value as number);
+                            return sum + numValue;
+                          }, 0)
+                      )}
                     </p>
                     <p className="text-sm text-blue-600">
                       {Array.isArray(record.onChainAssets) ? record.onChainAssets.length : Object.keys(record.onChainAssets || {}).length} 个钱包
@@ -163,10 +167,14 @@ export default function HistoryPage() {
                   <div className="bg-green-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-green-800">交易所资产</h3>
                     <p className="text-lg font-semibold text-green-900">
-                      {formatValue(((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => {
-                        const value = (asset as any).totalValueUSD ?? 0;
-                        return sum + (typeof value === 'string' ? parseFloat(value) || 0 : value);
-                      }, 0))}
+                      {formatValue(
+                        (Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {}))
+                          .reduce((sum: number, asset: any) => {
+                            const value = asset.totalValueUSD ?? 0;
+                            const numValue = typeof value === 'string' ? parseFloat(value) || 0 : (value as number);
+                            return sum + numValue;
+                          }, 0)
+                      )}
                     </p>
                     <p className="text-sm text-green-600">
                       {Array.isArray(record.cexAssets) ? record.cexAssets.length : Object.keys(record.cexAssets || {}).length} 个交易所
@@ -175,10 +183,14 @@ export default function HistoryPage() {
                   <div className="bg-purple-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-purple-800">银行资产</h3>
                     <p className="text-lg font-semibold text-purple-900">
-                      {formatValue(((Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {})).reduce((sum, asset) => {
-                        const value = (asset as any).valueUSD ?? 0;
-                        return sum + (typeof value === 'string' ? parseFloat(value) || 0 : value);
-                      }, 0))}
+                      {formatValue(
+                        (Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {}))
+                          .reduce((sum: number, asset: any) => {
+                            const value = asset.valueUSD ?? 0;
+                            const numValue = typeof value === 'string' ? parseFloat(value) || 0 : (value as number);
+                            return sum + numValue;
+                          }, 0)
+                      )}
                     </p>
                     <p className="text-sm text-purple-600">
                       {Array.isArray(record.bankAssets) ? record.bankAssets.length : Object.keys(record.bankAssets || {}).length} 个机构
