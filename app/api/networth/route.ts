@@ -1,22 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { db } from '@/lib/db';
 import { netWorthRecords } from '@/lib/schema';
-import { eq, desc } from 'drizzle-orm';
+import { desc } from 'drizzle-orm';
 
-// GET - 获取用户的所有净资产记录
+// GET - 获取所有净资产记录
 export async function GET() {
   try {
-    const session = await getServerSession();
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const records = await db
       .select()
       .from(netWorthRecords)
-      .where(eq(netWorthRecords.userId, parseInt(session.user.id)))
       .orderBy(desc(netWorthRecords.date));
 
     return NextResponse.json(records);
@@ -29,12 +21,6 @@ export async function GET() {
 // POST - 创建新的净资产记录
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
     const { date, totalValue, onChainAssets, cexAssets, bankAssets } = body;
 
@@ -45,7 +31,7 @@ export async function POST(request: NextRequest) {
     const newRecord = await db
       .insert(netWorthRecords)
       .values({
-        userId: parseInt(session.user.id),
+        userId: null, // 不再需要用户ID
         date,
         totalValue,
         onChainAssets,

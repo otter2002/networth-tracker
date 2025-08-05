@@ -14,7 +14,7 @@ export const users = pgTable('users', {
 // 净资产记录表
 export const netWorthRecords = pgTable('net_worth_records', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }), // 可选字段
   date: varchar('date', { length: 10 }).notNull(), // YYYY-MM-DD
   totalValue: decimal('total_value', { precision: 15, scale: 2 }).notNull(),
   onChainAssets: jsonb('on_chain_assets'), // JSON格式存储

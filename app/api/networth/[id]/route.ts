@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { db } from '@/lib/db';
 import { netWorthRecords } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 // GET - 获取单个净资产记录
 export async function GET(
@@ -10,21 +9,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession();
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const record = await db
       .select()
       .from(netWorthRecords)
-      .where(
-        and(
-          eq(netWorthRecords.id, parseInt(params.id)),
-          eq(netWorthRecords.userId, parseInt(session.user.id))
-        )
-      )
+      .where(eq(netWorthRecords.id, parseInt(params.id)))
       .limit(1);
 
     if (!record[0]) {
@@ -44,12 +32,6 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession();
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
     const { date, totalValue, onChainAssets, cexAssets, bankAssets } = body;
 
@@ -67,12 +49,7 @@ export async function PUT(
         bankAssets,
         updatedAt: new Date(),
       })
-      .where(
-        and(
-          eq(netWorthRecords.id, parseInt(params.id)),
-          eq(netWorthRecords.userId, parseInt(session.user.id))
-        )
-      )
+      .where(eq(netWorthRecords.id, parseInt(params.id)))
       .returning();
 
     if (!updatedRecord[0]) {
@@ -92,20 +69,9 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession();
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const deletedRecord = await db
       .delete(netWorthRecords)
-      .where(
-        and(
-          eq(netWorthRecords.id, parseInt(params.id)),
-          eq(netWorthRecords.userId, parseInt(session.user.id))
-        )
-      )
+      .where(eq(netWorthRecords.id, parseInt(params.id)))
       .returning();
 
     if (!deletedRecord[0]) {
