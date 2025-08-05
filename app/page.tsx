@@ -7,6 +7,7 @@ import { AssetComposition } from '@/components/AssetComposition';
 import { NetWorthSummary } from '@/components/NetWorthSummary';
 import { YieldSummary } from '@/components/YieldSummary';
 import { NetWorthRecord } from '@/types';
+import { fetchExchangeRates } from '@/lib/data';
 import { Plus, BarChart3, PieChart, TrendingUp, Wallet, Building2, Banknote, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { LanguageCurrencyToggle } from '@/components/LanguageCurrencyToggle';
@@ -19,13 +20,18 @@ export default function Dashboard() {
   const [currency, setCurrency] = useState<'USD' | 'THB' | 'CNY'>('USD');
 
   useEffect(() => {
-    // 从API获取数据
-    const fetchData = async () => {
+    // 每次页面加载前刷新汇率，然后再获取净资产记录
+    const init = async () => {
+      try {
+        await fetchExchangeRates();
+      } catch (error) {
+        console.error('Error refreshing exchange rates:', error);
+      }
+      // 获取净资产记录
       try {
         const response = await fetch('/api/networth');
         if (response.ok) {
           const data = await response.json();
-          // 按日期降序排序，保证最新记录在前
           const sorted = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setRecords(sorted);
         } else {
@@ -37,7 +43,7 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-    fetchData();
+    init();
   }, []);
 
   if (loading) {

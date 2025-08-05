@@ -10,8 +10,7 @@ export async function GET() {
     const rates = await db
       .select()
       .from(exchangeRates)
-      .orderBy(desc(exchangeRates.timestamp))
-      .limit(10); // 获取最新的10条记录
+      .orderBy(desc(exchangeRates.timestamp)); // 获取所有记录并按时间降序
 
     // 按货币分组，获取每种货币的最新汇率
     const latestRates: { [key: string]: number } = {};
@@ -51,4 +50,4 @@ export async function POST(request: NextRequest) {
     console.error('Error updating exchange rates:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-} 
+}
