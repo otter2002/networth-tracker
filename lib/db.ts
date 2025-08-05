@@ -12,8 +12,12 @@ if (!DATABASE_URL || DATABASE_URL === 'your-database-url') {
   throw new Error('Valid DATABASE_URL or POSTGRES_URL environment variable is required');
 }
 
-// 创建 Neon 连接
-const connection = neon(DATABASE_URL);
+// 创建 Neon 连接，优化serverless环境
+const connection = neon(DATABASE_URL, {
+  // Vercel serverless 优化配置
+  fullResults: false,
+  arrayMode: false,
+});
 export const db = drizzle(connection);
 
 // 运行迁移
