@@ -75,7 +75,7 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
     const convertedValue = value * exchangeRate;
     
     if (convertedValue >= 1000000) {
-      return `${symbol}${(convertedValue / 1000000).toFixed(1)}M`;
+      return `${symbol}${(convertedValue / 1000000).toFixed(2)}M`;
     } else if (convertedValue >= 1000) {
       return `${symbol}${(convertedValue / 1000).toFixed(0)}K`;
     }

@@ -22,7 +22,7 @@ export default function EditRecord() {
         const response = await fetch('/api/networth');
         if (response.ok) {
           const records = await response.json();
-          const foundRecord = records.find((r: NetWorthRecord) => r.id === recordId);
+          const foundRecord = records.find((r: NetWorthRecord) => r.id.toString() === recordId);
           if (foundRecord) {
             // 确保银行资产数据格式正确
             const migratedRecord = {
