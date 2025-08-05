@@ -15,7 +15,7 @@ export async function GET() {
 
     // 按货币分组，获取每种货币的最新汇率
     const latestRates: { [key: string]: number } = {};
-    rates.forEach(rate => {
+    rates.forEach((rate: any) => {
       if (!latestRates[rate.currency]) {
         latestRates[rate.currency] = parseFloat(rate.rate.toString());
       }
