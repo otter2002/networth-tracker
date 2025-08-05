@@ -6,6 +6,26 @@ import { eq, desc } from 'drizzle-orm';
 // GET - 获取汇率数据
 export async function GET() {
   try {
+    // 首先从 currencylayer 获取实时汇率
+    try {
+      const externalRes = await fetch('https://api.currencylayer.com/live?access_key=a28c6b9408ad6bca14f131c23a613e4f');
+      const externalData = await externalRes.json();
+      if (externalData.success && externalData.quotes) {
+        const liveRates: { [key: string]: number } = { USD: 1 };
+        Object.entries(externalData.quotes as Record<string, number>).forEach(([pair, rate]) => {
+          const currency = pair.slice(3);
+          if (rate && typeof rate === 'number') {
+            liveRates[currency] = 1 / rate; // 转为 USD per currency
+          }
+        });
+        // 同步写入数据库
+        const entries = Object.entries(liveRates).map(([currency, rate]) => ({ currency, rate: rate.toString() }));
+        await db.insert(exchangeRates).values(entries);
+        return NextResponse.json(liveRates);
+      }
+    } catch (extError) {
+      console.error('外部API获取失败，使用数据库缓存：', extError);
+    }
     // 获取最新的汇率数据
     const rates = await db
       .select()

@@ -726,18 +726,18 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
       return exchangeRatesCache;
     }
     
-    // 如果API失败，使用免费的汇率API作为备选
-    const fallbackResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    // 如果API失败，使用可靠的汇率API作为备选
+    const fallbackResponse = await fetch('https://api.exchangerate.host/latest?base=USD');
     const data = await fallbackResponse.json();
     
     if (data.rates) {
       // 转换为以USD为基准的汇率
       const rates: { [key: string]: number } = { 'USD': 1 };
-      
+    
       // 计算其他货币对USD的汇率
-      Object.keys(data.rates).forEach(currency => {
-        if (data.rates[currency]) {
-          rates[currency] = 1 / data.rates[currency];
+      Object.entries(data.rates as Record<string, number>).forEach(([currency, rate]) => {
+        if (rate && typeof rate === 'number') {
+          rates[currency] = 1 / rate;
         }
       });
       
@@ -776,4 +776,4 @@ export function getExchangeRate(currency: string): number {
 export async function getExchangeRateAsync(currency: string): Promise<number> {
   await fetchExchangeRates();
   return getExchangeRate(currency);
-} 
+}
