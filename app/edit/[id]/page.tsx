@@ -1,8 +1,23 @@
-import { useRef } from 'react';
-  // 密码弹窗相关
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
+import { NetWorthRecord, OnChainAsset, CEXAsset, BankAsset } from '@/types';
+import { ArrowLeft, Save, Plus, Trash2, Calendar } from 'lucide-react';
+import Link from 'next/link';
+
+// 密码弹窗相关
+// 必须放在组件内
+
+export default function EditRecord() {
+  const router = useRouter();
+  const params = useParams();
+  const recordId = params.id as string;
   const [auth, setAuth] = useState(false);
   const [showPwd, setShowPwd] = useState(true);
   const [pwd, setPwd] = useState('');
+
   const pwdInputRef = useRef<HTMLInputElement>(null);
   // 密码校验
   useEffect(() => {
@@ -22,14 +37,6 @@ import { useRef } from 'react';
       if (pwdInputRef.current) pwdInputRef.current.focus();
     }
   };
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
-import { NetWorthRecord, OnChainAsset, CEXAsset, BankAsset } from '@/types';
-import { ArrowLeft, Save, Plus, Trash2, Calendar } from 'lucide-react';
-import Link from 'next/link';
 
 export default function EditRecord() {
   const router = useRouter();
