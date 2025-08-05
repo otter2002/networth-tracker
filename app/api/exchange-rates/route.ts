@@ -6,7 +6,7 @@ import { eq, desc } from 'drizzle-orm';
 // GET - 获取汇率数据
 export async function GET() {
   try {
-    // 首先从 currencylayer 获取实时汇率
+    // 外部实时汇率优先：currencylayer
     try {
       const externalRes = await fetch('https://api.currencylayer.com/live?access_key=a28c6b9408ad6bca14f131c23a613e4f');
       const externalData = await externalRes.json();
@@ -15,16 +15,37 @@ export async function GET() {
         Object.entries(externalData.quotes as Record<string, number>).forEach(([pair, rate]) => {
           const currency = pair.slice(3);
           if (rate && typeof rate === 'number') {
-            liveRates[currency] = rate; // 直接使用 currency per USD
+            liveRates[currency] = rate;
           }
         });
-        // 同步写入数据库
+        // 同步写入数据库并返回
         const entries = Object.entries(liveRates).map(([currency, rate]) => ({ currency, rate: rate.toString() }));
         await db.insert(exchangeRates).values(entries);
         return NextResponse.json(liveRates);
       }
-    } catch (extError) {
-      console.error('外部API获取失败，使用数据库缓存：', extError);
+      // currencylayer无效时抛错，跳转备用API
+      throw new Error('currencylayer fetch unsuccessful');
+    } catch {
+      console.warn('currencylayer unavailable or unauthorized, trying exchangerate.host');
+      // 使用 exchangerate.host 作为次选
+      try {
+        const hostRes = await fetch('https://api.exchangerate.host/latest?base=USD');
+        const hostData = await hostRes.json();
+        if (hostData && hostData.rates) {
+          const liveRates: { [key: string]: number } = { USD: 1 };
+          Object.entries(hostData.rates as Record<string, number>).forEach(([currency, rate]) => {
+            if (rate && typeof rate === 'number') {
+              liveRates[currency] = rate;
+            }
+          });
+          // 写入数据库并返回
+          const entries = Object.entries(liveRates).map(([currency, rate]) => ({ currency, rate: rate.toString() }));
+          await db.insert(exchangeRates).values(entries);
+          return NextResponse.json(liveRates);
+        }
+      } catch (hostError) {
+        console.error('exchangerate.host fetch failed:', hostError);
+      }
     }
     // 获取最新的汇率数据
     const rates = await db
@@ -34,7 +55,8 @@ export async function GET() {
 
     // 如果数据库中没有汇率记录，返回默认汇率
     if (rates.length === 0) {
-      const defaultRates = { USD: 1, HKD: 0.128, CNY: 0.138, THB: 0.0285 };
+      // 默认汇率: currency per USD
+      const defaultRates = { USD: 1, HKD: 7.8, CNY: 7.3, THB: 35 };
       return NextResponse.json(defaultRates);
     }
 
