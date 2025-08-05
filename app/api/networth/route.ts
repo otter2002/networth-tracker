@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 import { netWorthRecords } from '@/lib/schema';
 import { desc } from 'drizzle-orm';
 
-// GET - 获取所有净资产记录
+// GET - 获取所有净资产记录 (Updated for Neon DB)
 export async function GET() {
   try {
     const records = await db
