@@ -38,12 +38,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid rates data' }, { status: 400 });
     }
 
-    // 批量插入汇率数据
+
+    // 批量插入汇率数据，确保rate为字符串（数据库schema要求string），但先parseFloat再toString
     const rateEntries = Object.entries(rates).map(([currency, rate]) => ({
       currency,
-      rate: parseFloat(rate as string).toString(),
+      rate: (typeof rate === 'number' ? rate : parseFloat(rate as string)).toString(),
     }));
-
     await db.insert(exchangeRates).values(rateEntries);
 
     return NextResponse.json({ message: 'Exchange rates updated successfully' });
