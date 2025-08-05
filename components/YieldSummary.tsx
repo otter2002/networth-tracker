@@ -1,7 +1,8 @@
 'use client';
 
 import { NetWorthRecord, Currency, Language } from '@/types';
-import { calculateYield, getExchangeRate } from '@/lib/data';
+import { calculateYield, getExchangeRate, fetchExchangeRates } from '@/lib/data';
+import { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, DollarSign, Clock } from 'lucide-react';
 
 interface YieldSummaryProps {
@@ -12,13 +13,19 @@ interface YieldSummaryProps {
 
 export function YieldSummary({ record, language = 'zh', currency = 'USD' }: YieldSummaryProps) {
   const yieldData = calculateYield(record);
-  
-  // 货币转换
+  // 实时汇率状态
+  const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({ USD: 1 });
+  useEffect(() => {
+    fetchExchangeRates()
+      .then((rates: { [key: string]: number }) => setExchangeRates(rates))
+      .catch((error: any) => console.error('Failed to fetch yields rates:', error));
+  }, []);
+  // 货币转换倍率
   let exchangeRate = 1;
   if (currency === 'THB') {
-    exchangeRate = 1 / getExchangeRate('THB');
+    exchangeRate = exchangeRates['THB'] || getExchangeRate('THB');
   } else if (currency === 'CNY') {
-    exchangeRate = 1 / getExchangeRate('CNY');
+    exchangeRate = exchangeRates['CNY'] || getExchangeRate('CNY');
   }
 
   const formatValue = (value: number) => {
