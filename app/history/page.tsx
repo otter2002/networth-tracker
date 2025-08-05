@@ -18,7 +18,8 @@ export default function HistoryPage() {
       const response = await fetch('/api/networth');
       if (response.ok) {
         const data = await response.json();
-        setRecords(data.records || []);
+        // API直接返回数组格式，不是 {records: []} 格式
+        setRecords(Array.isArray(data) ? data : []);
       } else {
         console.error('Failed to fetch records');
       }
