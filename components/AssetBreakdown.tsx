@@ -38,9 +38,9 @@ export function AssetBreakdown({ record, currency = 'USD', language = 'zh' }: As
   // 货币转换 - 使用实时汇率
   let exchangeRate = 1;
   if (currency === 'THB') {
-    exchangeRate = 1 / (exchangeRates['THB'] || getExchangeRate('THB'));
+    exchangeRate = exchangeRates['THB'] || getExchangeRate('THB');
   } else if (currency === 'CNY') {
-    exchangeRate = 1 / (exchangeRates['CNY'] || getExchangeRate('CNY'));
+    exchangeRate = exchangeRates['CNY'] || getExchangeRate('CNY');
   }
 
   const formatValue = (value: number) => {
