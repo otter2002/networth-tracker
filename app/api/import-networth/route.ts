@@ -14,7 +14,7 @@ function parseNetworthFile(content: string): NetWorthRecord[] {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     
-    // 检查是否是日期和总价值行
+    // 检查是否是日期和总价值行 (如: "3.29 总价值 2126376.78")
     if (line.match(/^\d+\.\d+\s+总价值.*\d+(\.\d+)?$/)) {
       // 保存之前的记录
       if (currentRecord) {
@@ -24,7 +24,8 @@ function parseNetworthFile(content: string): NetWorthRecord[] {
       // 解析日期和总价值
       const parts = line.split(/\s+/);
       const dateStr = parts[0]; // 如 "3.29"
-      const totalValue = parseFloat(parts[parts.length - 1]);
+      const totalValueStr = parts[parts.length - 1];
+      const totalValue = parseFloat(totalValueStr);
       
       // 转换日期格式 (假设是2024年)
       const [month, day] = dateStr.split('.');
@@ -42,65 +43,64 @@ function parseNetworthFile(content: string): NetWorthRecord[] {
       // 下一行应该是表头
       if (i + 1 < lines.length) {
         headerLine = lines[i + 1];
+        i++; // 跳过表头行
       }
     }
     // 解析USDC行
     else if (line.startsWith('usdc') && currentRecord) {
-      const parts = line.split(/\s+/);
-      // parts[0] = 'usdc', 然后是各个钱包的数值
+      // 使用制表符分割
+      const parts = line.split('\t').filter(part => part.trim() !== '');
+      const headers = headerLine.split('\t').filter(header => header.trim() !== '');
       
-      // 根据表头解析每列对应的钱包
-      const headers = headerLine.split(/\s+/);
-      
+      // 处理USDC数据
       for (let j = 1; j < Math.min(parts.length, headers.length); j++) {
-        const valueStr = parts[j];
-        if (!valueStr || valueStr === '' || isNaN(parseFloat(valueStr))) continue;
+        const valueStr = parts[j]?.trim();
+        if (!valueStr || valueStr === '' || valueStr === '0' || isNaN(parseFloat(valueStr))) continue;
         
         const value = parseFloat(valueStr);
-        const header = headers[j];
+        const header = headers[j]?.trim();
         
         if (value > 0 && header && header !== '总量') {
           // 判断是CEX还是链上钱包
-          if (header.includes('okx') && !header.includes('钱包') && !header.includes('evm') && !header.includes('sol')) {
-            // CEX资产
+          if (header.includes('okx钱包+okx') || (header.includes('okx') && !header.includes('minner'))) {
+            // CEX资产 - OKX
             const existingCex = currentRecord.cexAssets.find(asset => asset.exchange === 'okx');
             if (existingCex) {
               existingCex.totalValueUSD += value;
             } else {
-              const cexAsset: CEXAsset = {
+              currentRecord.cexAssets.push({
                 id: `cex_okx_${j}`,
                 exchange: 'okx',
                 totalValueUSD: value
-              };
-              currentRecord.cexAssets.push(cexAsset);
+              });
             }
           } else if (header.includes('binance')) {
+            // CEX资产 - Binance
             const existingCex = currentRecord.cexAssets.find(asset => asset.exchange === 'binance');
             if (existingCex) {
               existingCex.totalValueUSD += value;
             } else {
-              const cexAsset: CEXAsset = {
+              currentRecord.cexAssets.push({
                 id: `cex_binance_${j}`,
                 exchange: 'binance',
                 totalValueUSD: value
-              };
-              currentRecord.cexAssets.push(cexAsset);
+              });
             }
           } else if (header.includes('bitget') || header.includes('bybit') || header.includes('bakcpack')) {
+            // CEX资产 - Bitget/Bybit
             const existingCex = currentRecord.cexAssets.find(asset => asset.exchange === 'bitget');
             if (existingCex) {
               existingCex.totalValueUSD += value;
             } else {
-              const cexAsset: CEXAsset = {
+              currentRecord.cexAssets.push({
                 id: `cex_bitget_${j}`,
                 exchange: 'bitget',
                 totalValueUSD: value
-              };
-              currentRecord.cexAssets.push(cexAsset);
+              });
             }
           } else if (header.includes('minner') || header.includes('onekey') || header.includes('evm') || header.includes('sol')) {
             // 链上资产
-            const onChainAsset: OnChainAsset = {
+            currentRecord.onChainAssets.push({
               id: `wallet_${header.replace(/[^a-zA-Z0-9]/g, '_')}_${j}`,
               walletAddress: '0x...',
               remark: header,
@@ -113,33 +113,30 @@ function parseNetworthFile(content: string): NetWorthRecord[] {
               dailyIncome: 0,
               monthlyIncome: 0,
               yearlyIncome: 0
-            };
-            currentRecord.onChainAssets.push(onChainAsset);
+            });
           }
         }
       }
     }
-    // 解析银行资产
+    // 解析银行资产 (泰铢、日元、港币、人民币)
     else if ((line.includes('泰铢') || line.includes('日元') || line.includes('港币') || line.includes('人民币')) && currentRecord) {
-      const parts = line.split(/\s+/);
-      const currency = parts[0];
-      
-      // 查找银行对应的金额
-      const headers = headerLine.split(/\s+/);
+      const parts = line.split('\t').filter(part => part.trim() !== '');
+      const headers = headerLine.split('\t').filter(header => header.trim() !== '');
+      const currency = parts[0]?.trim();
       
       for (let j = 1; j < Math.min(parts.length, headers.length); j++) {
-        const valueStr = parts[j];
-        if (!valueStr || valueStr === '' || isNaN(parseFloat(valueStr))) continue;
+        const valueStr = parts[j]?.trim();
+        if (!valueStr || valueStr === '' || valueStr === '0' || isNaN(parseFloat(valueStr))) continue;
         
         const value = parseFloat(valueStr);
-        const header = headers[j];
+        const header = headers[j]?.trim();
         
         if (value > 0 && header && header !== '总量') {
           let institution = '';
           let currencyCode = '';
           let exchangeRate = 0;
           
-          // 根据header和currency确定银行和汇率
+          // 根据currency和header确定银行和汇率
           if (currency === '泰铢' && header.includes('曼谷')) {
             institution = 'bkk bank';
             currencyCode = 'THB';
@@ -169,7 +166,7 @@ function parseNetworthFile(content: string): NetWorthRecord[] {
           }
           
           if (institution) {
-            const bankAsset: BankAsset = {
+            currentRecord.bankAssets.push({
               id: `bank_${institution.replace(/[^a-zA-Z0-9]/g, '_')}_${j}`,
               institution: institution as any,
               depositType: '活期',
@@ -177,8 +174,7 @@ function parseNetworthFile(content: string): NetWorthRecord[] {
               amount: value,
               exchangeRate,
               valueUSD: value * exchangeRate
-            };
-            currentRecord.bankAssets.push(bankAsset);
+            });
           }
         }
       }
