@@ -67,12 +67,12 @@ export default function EditRecord() {
     setSaving(true);
     try {
       // 计算总价值
-      const onChainTotal = (record.onChainAssets || []).reduce((sum, asset) => {
-        return sum + asset.totalValueUSD;
+      const onChainTotal = Object.values(record.onChainAssets || {}).reduce((sum, asset) => {
+        return sum + ((asset as any).value ?? (asset as any).amount ?? 0);
       }, 0);
       
-      const cexTotal = (record.cexAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-      const bankTotal = (record.bankAssets || []).reduce((sum, asset) => sum + asset.valueUSD, 0);
+      const cexTotal = Object.values(record.cexAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0);
+      const bankTotal = Object.values(record.bankAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0);
       const totalValue = onChainTotal + cexTotal + bankTotal;
 
       // 删除原记录
@@ -210,9 +210,9 @@ export default function EditRecord() {
                 </label>
                 <div className="mt-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium">
                   ${(() => {
-                    const onChainTotal = (record.onChainAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-                    const cexTotal = (record.cexAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-                    const bankTotal = (record.bankAssets || []).reduce((sum, asset) => sum + asset.valueUSD, 0);
+                    const onChainTotal = Object.values(record.onChainAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0);
+                    const cexTotal = Object.values(record.cexAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0);
+                    const bankTotal = Object.values(record.bankAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0);
                     return (onChainTotal + cexTotal + bankTotal).toFixed(2);
                   })()}
                 </div>

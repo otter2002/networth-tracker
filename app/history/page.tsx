@@ -149,7 +149,7 @@ export default function HistoryPage() {
                   <div className="bg-blue-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-blue-800">链上资产</h3>
                     <p className="text-lg font-semibold text-blue-900">
-                      {formatValue((record.onChainAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0))}
+                      {formatValue(Object.values(record.onChainAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0))}
                     </p>
                     <p className="text-sm text-blue-600">
                       {(record.onChainAssets || []).length} 个钱包
@@ -158,7 +158,7 @@ export default function HistoryPage() {
                   <div className="bg-green-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-green-800">交易所资产</h3>
                     <p className="text-lg font-semibold text-green-900">
-                      {formatValue((record.cexAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0))}
+                      {formatValue(Object.values(record.cexAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0))}
                     </p>
                     <p className="text-sm text-green-600">
                       {(record.cexAssets || []).length} 个交易所
@@ -167,7 +167,7 @@ export default function HistoryPage() {
                   <div className="bg-purple-50 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-purple-800">银行资产</h3>
                     <p className="text-lg font-semibold text-purple-900">
-                      {formatValue((record.bankAssets || []).reduce((sum, asset) => sum + asset.valueUSD, 0))}
+                      {formatValue(Object.values(record.bankAssets || {}).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0))}
                     </p>
                     <p className="text-sm text-purple-600">
                       {(record.bankAssets || []).length} 个机构
