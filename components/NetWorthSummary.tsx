@@ -1,8 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { NetWorthRecord, Currency, Language } from '@/types';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import { getExchangeRate } from '@/lib/data';
+import { getExchangeRate, fetchExchangeRates } from '@/lib/data';
 
 interface NetWorthSummaryProps {
   records: NetWorthRecord[];
@@ -11,6 +12,25 @@ interface NetWorthSummaryProps {
 }
 
 export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: NetWorthSummaryProps) {
+  const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
+
+  // 获取最新汇率
+  useEffect(() => {
+    const updateRates = async () => {
+      try {
+        const rates = await fetchExchangeRates();
+        setExchangeRates(rates);
+      } catch (error) {
+        console.error('Failed to fetch exchange rates:', error);
+      }
+    };
+    
+    updateRates();
+    // 每5分钟更新一次汇率
+    const interval = setInterval(updateRates, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   if (records.length === 0) return null;
 
   // records已按日期降序排列，第一个是最新的
@@ -20,12 +40,12 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
   const change = previous ? latest.totalValue - previous.totalValue : 0;
   const changePercent = previous ? (change / previous.totalValue) * 100 : 0;
   
-  // 货币转换
+  // 货币转换 - 使用实时汇率
   let exchangeRate = 1;
   if (currency === 'THB') {
-    exchangeRate = 1 / getExchangeRate('THB');
+    exchangeRate = 1 / (exchangeRates['THB'] || getExchangeRate('THB'));
   } else if (currency === 'CNY') {
-    exchangeRate = 1 / getExchangeRate('CNY');
+    exchangeRate = 1 / (exchangeRates['CNY'] || getExchangeRate('CNY'));
   }
   const currentValue = latest.totalValue * exchangeRate;
   const changeValue = change * exchangeRate;

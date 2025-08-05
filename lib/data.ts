@@ -717,9 +717,18 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
   }
 
   try {
-    // 使用免费的汇率API
-    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-    const data = await response.json();
+    // 从后端API获取汇率数据
+    const response = await fetch('/api/exchange-rates');
+    if (response.ok) {
+      const rates = await response.json();
+      exchangeRatesCache = { ...rates, 'USD': 1 };
+      exchangeRatesTimestamp = now;
+      return exchangeRatesCache;
+    }
+    
+    // 如果API失败，使用免费的汇率API作为备选
+    const fallbackResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await fallbackResponse.json();
     
     if (data.rates) {
       // 转换为以USD为基准的汇率
