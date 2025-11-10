@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { NetWorthRecord, Currency, Language } from '@/types';
 import { calculateAssetBreakdown, getExchangeRate, fetchExchangeRates } from '@/lib/data';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Wallet, Building2, Banknote } from 'lucide-react';
+import { Wallet, Building2, Banknote, TrendingUp } from 'lucide-react';
 
 interface AssetCompositionProps {
   record: NetWorthRecord;
@@ -88,6 +88,19 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
 
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
+  // 收集所有正在生息的仓位（APR > 0）
+  const yieldingPositions = record.onChainAssets.flatMap(asset =>
+    asset.positions
+      .filter(position => position.apr > 0)
+      .map(position => ({
+        walletRemark: asset.remark || asset.walletAddress.substring(0, 6) + '...',
+        token: position.token,
+        valueUSD: position.valueUSD,
+        apr: position.apr,
+        dailyIncome: (position.valueUSD * position.apr) / 365 / 100
+      }))
+  );
+
   return (
     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
       <div className="p-6">
@@ -163,7 +176,100 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
             </div>
           </div>
         </div>
+
+        {/* 正在生息的链上资产仓位 */}
+        {yieldingPositions.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center mb-4">
+              <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
+              <h4 className="text-base font-medium text-gray-900 dark:text-white">
+                {language === 'zh' ? '正在生息的链上资产仓位' : 'ตำแหน่งสินทรัพย์ที่สร้างผลตอบแทน'}
+              </h4>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {language === 'zh' ? '钱包' : 'กระเป๋าเงิน'}
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {language === 'zh' ? '代币' : 'โทเค็น'}
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {language === 'zh' ? '价值' : 'มูลค่า'}
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      APR
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {language === 'zh' ? '每日收益' : 'รายได้รายวัน'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {yieldingPositions.map((position, index) => (
+                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        {position.walletRemark}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400">
+                        {position.token}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
+                        {formatValue(position.valueUSD)}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-medium text-green-600 dark:text-green-400">
+                        {position.apr.toFixed(2)}%
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-medium text-green-600 dark:text-green-400">
+                        {formatValue(position.dailyIncome)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* 生息仓位汇总 */}
+            <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                    {language === 'zh' ? '生息仓位总价值' : 'มูลค่ารวมตำแหน่งที่สร้างผลตอบแทน'}
+                  </div>
+                  <div className="text-lg font-semibold text-green-700 dark:text-green-400">
+                    {formatValue(yieldingPositions.reduce((sum, p) => sum + p.valueUSD, 0))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                    {language === 'zh' ? '加权平均APR' : 'APR เฉลี่ยถ่วงน้ำหนัก'}
+                  </div>
+                  <div className="text-lg font-semibold text-green-700 dark:text-green-400">
+                    {(() => {
+                      const totalValue = yieldingPositions.reduce((sum, p) => sum + p.valueUSD, 0);
+                      const weightedAPR = totalValue > 0
+                        ? yieldingPositions.reduce((sum, p) => sum + (p.valueUSD * p.apr), 0) / totalValue
+                        : 0;
+                      return weightedAPR.toFixed(2);
+                    })()}%
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                    {language === 'zh' ? '每日总收益' : 'รายได้รวมรายวัน'}
+                  </div>
+                  <div className="text-lg font-semibold text-green-700 dark:text-green-400">
+                    {formatValue(yieldingPositions.reduce((sum, p) => sum + p.dailyIncome, 0))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-} 
+}
