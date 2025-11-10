@@ -26,6 +26,7 @@ export interface CEXAsset {
   id: string;
   exchange: 'bybit' | 'bitget' | 'okx' | 'binance';
   totalValueUSD: number;
+  apr?: number; // 年化收益率（可选）
 }
 
 // 银行和券商资产

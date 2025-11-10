@@ -89,10 +89,11 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   // 收集所有正在生息的仓位（APR > 0）
-  const yieldingPositions = record.onChainAssets.flatMap(asset =>
+  const onChainYieldingPositions = record.onChainAssets.flatMap(asset =>
     asset.positions
       .filter(position => position.apr > 0)
       .map(position => ({
+        type: 'onchain' as const,
         walletRemark: asset.remark || asset.walletAddress.substring(0, 6) + '...',
         token: position.token,
         valueUSD: position.valueUSD,
@@ -100,6 +101,21 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
         dailyIncome: (position.valueUSD * position.apr) / 365 / 100
       }))
   );
+
+  // 收集交易所生息资产（APR > 0）
+  const cexYieldingPositions = record.cexAssets
+    .filter(asset => asset.apr && asset.apr > 0)
+    .map(asset => ({
+      type: 'cex' as const,
+      walletRemark: asset.exchange.toUpperCase(),
+      token: language === 'zh' ? '总资产' : 'สินทรัพย์รวม',
+      valueUSD: asset.totalValueUSD,
+      apr: asset.apr || 0,
+      dailyIncome: (asset.totalValueUSD * (asset.apr || 0)) / 365 / 100
+    }));
+
+  // 合并所有生息资产
+  const yieldingPositions = [...onChainYieldingPositions, ...cexYieldingPositions];
 
   return (
     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
@@ -177,13 +193,13 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
           </div>
         </div>
 
-        {/* 正在生息的链上资产仓位 */}
+        {/* 正在生息的资产仓位 */}
         {yieldingPositions.length > 0 && (
           <div className="mt-8">
             <div className="flex items-center mb-4">
               <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
               <h4 className="text-base font-medium text-gray-900 dark:text-white">
-                {language === 'zh' ? '正在生息的链上资产仓位' : 'ตำแหน่งสินทรัพย์ที่สร้างผลตอบแทน'}
+                {language === 'zh' ? '正在生息的资产仓位' : 'ตำแหน่งสินทรัพย์ที่สร้างผลตอบแทน'}
               </h4>
             </div>
             
@@ -192,10 +208,10 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {language === 'zh' ? '钱包' : 'กระเป๋าเงิน'}
+                      {language === 'zh' ? '类型' : 'ประเภท'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {language === 'zh' ? '代币' : 'โทเค็น'}
+                      {language === 'zh' ? '账户/代币' : 'บัญชี/โทเค็น'}
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       {language === 'zh' ? '价值' : 'มูลค่า'}
@@ -212,10 +228,17 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
                   {yieldingPositions.map((position, index) => (
                     <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {position.walletRemark}
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          position.type === 'onchain'
+                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                            : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                        }`}>
+                          {position.type === 'onchain' ? (language === 'zh' ? '链上' : 'บนเชน') : (language === 'zh' ? '交易所' : 'ตลาด')}
+                        </span>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400">
-                        {position.token}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm">
+                        <div className="font-medium text-gray-900 dark:text-white">{position.walletRemark}</div>
+                        <div className="text-xs text-blue-600 dark:text-blue-400">{position.token}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                         {formatValue(position.valueUSD)}

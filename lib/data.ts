@@ -54,19 +54,26 @@ export function calculateYield(record: NetWorthRecord): YieldCalculation {
     });
   }
 
-  // 计算交易所资产
+  // 计算交易所资产收益
   if (record.cexAssets && record.cexAssets.length > 0) {
     record.cexAssets.forEach(asset => {
       totalValue += asset.totalValueUSD;
+      // 如果有APR，计算收益
+      if (asset.apr && asset.apr > 0) {
+        const dailyIncome = (asset.totalValueUSD * asset.apr) / 365 / 100;
+        const yearlyIncome = asset.totalValueUSD * asset.apr / 100;
+        totalDailyYield += dailyIncome;
+        totalAnnualYield += yearlyIncome;
+      }
     });
   }
 
-        // 计算银行资产
-      if (record.bankAssets && record.bankAssets.length > 0) {
-        record.bankAssets.forEach(asset => {
-          totalValue += asset.valueUSD;
-        });
-      }
+  // 计算银行资产
+  if (record.bankAssets && record.bankAssets.length > 0) {
+    record.bankAssets.forEach(asset => {
+      totalValue += asset.valueUSD;
+    });
+  }
 
   const totalAPR = totalValue > 0 ? (totalAnnualYield / totalValue) * 100 : 0;
   const projectedAnnualYield = totalDailyYield * 365;
