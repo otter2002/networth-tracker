@@ -258,7 +258,7 @@ export default function AddRecord() {
                         newAssets[index].walletAddress = e.target.value;
                         setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0x..."
                     />
@@ -273,7 +273,7 @@ export default function AddRecord() {
                         newAssets[index].remark = e.target.value;
                         setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="钱包备注"
                     />
@@ -289,7 +289,7 @@ export default function AddRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
@@ -313,7 +313,7 @@ export default function AddRecord() {
                         newAssets[index].positions.push(newPosition);
                         setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                       }}
-                      className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-blue-600 bg-blue-50 hover:bg-blue-100"
+                      className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       添加仓位
@@ -321,7 +321,7 @@ export default function AddRecord() {
                   </div>
                   
                   {asset.positions.map((position, posIndex) => (
-                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 rounded">
+                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">代币</label>
                         <input
@@ -332,7 +332,7 @@ export default function AddRecord() {
                             newAssets[index].positions[posIndex].token = e.target.value;
                             setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           style={{ colorScheme: 'light' }}
                           placeholder="USDC"
                         />
@@ -349,7 +349,7 @@ export default function AddRecord() {
                             newAssets[index].positions[posIndex].valueUSD = value;
                             setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           style={{ colorScheme: 'light' }}
                           placeholder="0.00"
                         />
@@ -366,7 +366,7 @@ export default function AddRecord() {
                             newAssets[index].positions[posIndex].apr = value;
                             setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           style={{ colorScheme: 'light' }}
                           placeholder="0.00"
                         />
@@ -387,8 +387,8 @@ export default function AddRecord() {
 
                   {/* 钱包收益概览 */}
                   {asset.positions.length > 0 && (
-                    <div className="mt-3 p-3 bg-blue-50 rounded">
-                      <h5 className="text-sm font-medium text-blue-800 mb-2">收益概览</h5>
+                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
+                      <h5 className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">收益概览</h5>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
                         <div>
                           <span className="text-gray-600 dark:text-gray-400">仓位总价值:</span>
@@ -446,7 +446,7 @@ export default function AddRecord() {
               </button>
             </div>
             {formData.cexAssets.map((asset, index) => (
-              <div key={asset.id} className="border rounded-lg p-4 mb-4">
+              <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">交易所</label>
@@ -457,7 +457,7 @@ export default function AddRecord() {
                         newAssets[index].exchange = e.target.value as any;
                         setFormData(prev => ({ ...prev, cexAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="binance">Binance</option>
@@ -477,7 +477,7 @@ export default function AddRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setFormData(prev => ({ ...prev, cexAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
@@ -511,7 +511,7 @@ export default function AddRecord() {
               </button>
             </div>
             {formData.bankAssets.map((asset, index) => (
-              <div key={asset.id} className="border rounded-lg p-4 mb-4">
+              <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">银行/券商</label>
@@ -528,7 +528,7 @@ export default function AddRecord() {
                         }
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="za bank">ZA Bank</option>
@@ -548,7 +548,7 @@ export default function AddRecord() {
                         newAssets[index].depositType = e.target.value as BankAsset['depositType'];
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="活期">活期</option>
@@ -570,7 +570,7 @@ export default function AddRecord() {
                         newAssets[index].valueUSD = newAssets[index].amount * exchangeRate;
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="USD">美元 (USD)</option>
@@ -594,14 +594,14 @@ export default function AddRecord() {
                         newAssets[index].valueUSD = value * newAssets[index].exchangeRate;
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">美元价值</label>
-                    <div className="mt-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium">
+                    <div className="mt-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-900 dark:text-white">
                       ${asset.valueUSD.toFixed(2)}
                     </div>
                   </div>
@@ -624,14 +624,14 @@ export default function AddRecord() {
           <div className="flex justify-end space-x-4">
             <Link
               href="/"
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               取消
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

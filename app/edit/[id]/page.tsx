@@ -191,20 +191,20 @@ export default function EditRecord() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-6">
             <Link
               href="/"
-              className="mr-4 p-2 text-gray-400 hover:text-gray-600"
+              className="mr-4 p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">编辑净资产记录</h1>
-              <p className="text-sm text-gray-600">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">编辑净资产记录</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 {new Date(record.date).toLocaleDateString('zh-CN')}
               </p>
             </div>
@@ -215,27 +215,27 @@ export default function EditRecord() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* 基本信息 */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">基本信息</h2>
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">基本信息</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   日期
                 </label>
                 <input
                   type="date"
                   value={record.date}
                   onChange={(e) => setRecord({ ...record, date: e.target.value })}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                  className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   style={{ colorScheme: 'light' }}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   总价值 (USD)
                 </label>
-                <div className="mt-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium">
+                <div className="mt-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-900 dark:text-white">
                   ${(() => {
                     const onChainTotal = ((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
                     const cexTotal = ((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
@@ -243,29 +243,29 @@ export default function EditRecord() {
                     return (onChainTotal + cexTotal + bankTotal).toFixed(2);
                   })()}
                 </div>
-                <p className="mt-1 text-xs text-gray-500">总价值根据下方资产自动计算</p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">总价值根据下方资产自动计算</p>
               </div>
             </div>
           </div>
 
           {/* 链上资产 */}
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">链上资产</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">链上资产</h2>
               <button
                 type="button"
                 onClick={addOnChainAsset}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 添加钱包
               </button>
             </div>
             {(record.onChainAssets || []).map((asset, index) => (
-              <div key={asset.id} className="border rounded-lg p-4 mb-4">
+              <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">钱包地址</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">钱包地址</label>
                     <input
                       type="text"
                       value={asset.walletAddress}
@@ -274,13 +274,13 @@ export default function EditRecord() {
                        newAssets[index].walletAddress = e.target.value;
                        setRecord({ ...record, onChainAssets: newAssets });
                      }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0x..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">备注名</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">备注名</label>
                     <input
                       type="text"
                       value={asset.remark}
@@ -289,13 +289,13 @@ export default function EditRecord() {
                        newAssets[index].remark = e.target.value;
                        setRecord({ ...record, onChainAssets: newAssets });
                      }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="钱包备注"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">总价值 (USD)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">总价值 (USD)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -305,7 +305,7 @@ export default function EditRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setRecord({ ...record, onChainAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
@@ -315,7 +315,7 @@ export default function EditRecord() {
                 {/* 仓位管理 */}
                 <div className="mt-4">
                   <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-sm font-medium text-gray-700">仓位管理</h4>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">仓位管理</h4>
                     <button
                       type="button"
                       onClick={() => {
@@ -329,7 +329,7 @@ export default function EditRecord() {
                         newAssets[index].positions.push(newPosition);
                         setRecord({ ...record, onChainAssets: newAssets });
                       }}
-                      className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-blue-600 bg-blue-50 hover:bg-blue-100"
+                      className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       添加仓位
@@ -337,9 +337,9 @@ export default function EditRecord() {
                   </div>
                   
                   {(asset.positions || []).map((position, posIndex) => (
-                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 rounded">
+                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
                       <div>
-                        <label className="block text-xs font-medium text-gray-700">代币</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">代币</label>
                         <input
                           type="text"
                           value={position.token}
@@ -348,13 +348,13 @@ export default function EditRecord() {
                             newAssets[index].positions[posIndex].token = e.target.value;
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           style={{ colorScheme: 'light' }}
                           placeholder="USDC"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700">价值 (USD)</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">价值 (USD)</label>
                         <input
                           type="number"
                           step="0.01"
@@ -365,13 +365,13 @@ export default function EditRecord() {
                             newAssets[index].positions[posIndex].valueUSD = value;
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           style={{ colorScheme: 'light' }}
                           placeholder="0.00"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700">APR (%)</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">APR (%)</label>
                         <input
                           type="number"
                           step="0.01"
@@ -382,7 +382,7 @@ export default function EditRecord() {
                             newAssets[index].positions[posIndex].apr = value;
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           style={{ colorScheme: 'light' }}
                           placeholder="0.00"
                         />
@@ -394,7 +394,7 @@ export default function EditRecord() {
                           newAssets[index].positions.splice(posIndex, 1);
                           setRecord({ ...record, onChainAssets: newAssets });
                         }}
-                        className="text-red-600 hover:text-red-800 text-xs"
+                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-xs"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -403,30 +403,30 @@ export default function EditRecord() {
 
                   {/* 钱包收益概览 */}
                   {(asset.positions || []).length > 0 && (
-                    <div className="mt-3 p-3 bg-blue-50 rounded">
-                      <h5 className="text-sm font-medium text-blue-800 mb-2">收益概览</h5>
+                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
+                      <h5 className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">收益概览</h5>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
                         <div>
-                          <span className="text-gray-600">仓位总价值:</span>
+                          <span className="text-gray-600 dark:text-gray-400">仓位总价值:</span>
                           <span className="ml-1 font-medium">${(() => {
                             const positionsTotal = (asset.positions || []).reduce((sum, position) => sum + position.valueUSD, 0);
                             return positionsTotal.toFixed(2);
                           })()}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">生息价值:</span>
+                          <span className="text-gray-600 dark:text-gray-400">生息价值:</span>
                           <span className="ml-1 font-medium">${calculateWalletYield(asset).yieldValueUSD.toFixed(2)}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">总APR:</span>
+                          <span className="text-gray-600 dark:text-gray-400">总APR:</span>
                           <span className="ml-1 font-medium">{calculateWalletYield(asset).totalAPR.toFixed(2)}%</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">日收入:</span>
+                          <span className="text-gray-600 dark:text-gray-400">日收入:</span>
                           <span className="ml-1 font-medium">${calculateWalletYield(asset).dailyIncome.toFixed(2)}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">年收入:</span>
+                          <span className="text-gray-600 dark:text-gray-400">年收入:</span>
                           <span className="ml-1 font-medium">${calculateWalletYield(asset).yearlyIncome.toFixed(2)}</span>
                         </div>
                       </div>
@@ -440,7 +440,7 @@ export default function EditRecord() {
                     const newAssets = (record.onChainAssets || []).filter((_, i) => i !== index);
                     setRecord({ ...record, onChainAssets: newAssets });
                   }}
-                  className="text-red-600 hover:text-red-800 mt-3"
+                  className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 mt-3"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -449,23 +449,23 @@ export default function EditRecord() {
           </div>
 
           {/* 中心化交易所资产 */}
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">中心化交易所资产</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">中心化交易所资产</h2>
               <button
                 type="button"
                 onClick={addCEXAsset}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 添加交易所
               </button>
             </div>
             {(record.cexAssets || []).map((asset, index) => (
-              <div key={asset.id} className="border rounded-lg p-4 mb-4">
+              <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">交易所</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">交易所</label>
                     <select
                       value={asset.exchange}
                       onChange={(e) => {
@@ -473,7 +473,7 @@ export default function EditRecord() {
                         newAssets[index].exchange = e.target.value as any;
                         setRecord({ ...record, cexAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="binance">Binance</option>
@@ -483,7 +483,7 @@ export default function EditRecord() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">总价值 (USD)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">总价值 (USD)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -493,7 +493,7 @@ export default function EditRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setRecord({ ...record, cexAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
@@ -505,7 +505,7 @@ export default function EditRecord() {
                      const newAssets = (record.cexAssets || []).filter((_, i) => i !== index);
                      setRecord({ ...record, cexAssets: newAssets });
                    }}
-                   className="text-red-600 hover:text-red-800 mt-2"
+                   className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 mt-2"
                  >
                    <Trash2 className="w-4 h-4" />
                  </button>
@@ -514,23 +514,23 @@ export default function EditRecord() {
           </div>
 
           {/* 银行和券商资产 */}
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">银行和券商资产</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">银行和券商资产</h2>
               <button
                 type="button"
                 onClick={addBankAsset}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 添加机构
               </button>
             </div>
             {(record.bankAssets || []).map((asset, index) => (
-              <div key={asset.id} className="border rounded-lg p-4 mb-4">
+              <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">银行/券商</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">银行/券商</label>
                     <select
                       value={asset.institution}
                       onChange={(e) => {
@@ -544,7 +544,7 @@ export default function EditRecord() {
                         }
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="za bank">ZA Bank</option>
@@ -556,7 +556,7 @@ export default function EditRecord() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">存款类型</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">存款类型</label>
                     <select
                       value={asset.depositType}
                       onChange={(e) => {
@@ -564,7 +564,7 @@ export default function EditRecord() {
                         newAssets[index].depositType = e.target.value as BankAsset['depositType'];
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="活期">活期</option>
@@ -573,7 +573,7 @@ export default function EditRecord() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">币种</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">币种</label>
                     <select
                       value={asset.currency}
                       onChange={async (e) => {
@@ -586,7 +586,7 @@ export default function EditRecord() {
                         newAssets[index].valueUSD = newAssets[index].amount * exchangeRate;
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                     >
                       <option value="USD">美元 (USD)</option>
@@ -598,7 +598,7 @@ export default function EditRecord() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">金额</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">金额</label>
                     <input
                       type="number"
                       step="0.01"
@@ -610,14 +610,14 @@ export default function EditRecord() {
                         newAssets[index].valueUSD = value * newAssets[index].exchangeRate;
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">美元价值</label>
-                    <div className="mt-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">美元价值</label>
+                    <div className="mt-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-900 dark:text-white">
                       ${(asset.valueUSD || 0).toFixed(2)}
                     </div>
                   </div>
@@ -628,7 +628,7 @@ export default function EditRecord() {
                     const newAssets = (record.bankAssets || []).filter((_, i) => i !== index);
                     setRecord({ ...record, bankAssets: newAssets });
                   }}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -640,14 +640,14 @@ export default function EditRecord() {
           <div className="flex justify-end space-x-4">
             <Link
               href="/"
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               取消
             </Link>
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {saving ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
