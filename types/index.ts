@@ -21,12 +21,27 @@ export interface OnChainPosition {
   apr: number; // 年化收益率
 }
 
+// 交易所仓位
+export interface CEXPosition {
+  id: string;
+  product: string; // 产品名称（如：理财、Earn、活期等）
+  valueUSD: number; // 价值USD
+  apr: number; // 年化收益率
+}
+
 // 中心化交易所资产
 export interface CEXAsset {
   id: string;
   exchange: 'bybit' | 'bitget' | 'okx' | 'binance';
-  totalValueUSD: number;
-  apr?: number; // 年化收益率（可选）
+  positions: CEXPosition[]; // 交易所仓位列表
+  // 可编辑的总价值
+  totalValueUSD: number; // 交易所总价值（手动编辑）
+  // 计算得出的值
+  yieldValueUSD: number; // 生息仓位总价值
+  totalAPR: number;
+  dailyIncome: number;
+  monthlyIncome: number;
+  yearlyIncome: number;
 }
 
 // 银行和券商资产

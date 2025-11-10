@@ -102,17 +102,19 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
       }))
   );
 
-  // 收集交易所生息资产（APR > 0）
-  const cexYieldingPositions = record.cexAssets
-    .filter(asset => asset.apr && asset.apr > 0)
-    .map(asset => ({
-      type: 'cex' as const,
-      walletRemark: asset.exchange.toUpperCase(),
-      token: language === 'zh' ? '总资产' : 'สินทรัพย์รวม',
-      valueUSD: asset.totalValueUSD,
-      apr: asset.apr || 0,
-      dailyIncome: (asset.totalValueUSD * (asset.apr || 0)) / 365 / 100
-    }));
+  // 收集交易所生息仓位（APR > 0）
+  const cexYieldingPositions = record.cexAssets.flatMap(asset =>
+    (asset.positions || [])
+      .filter(position => position.apr > 0)
+      .map(position => ({
+        type: 'cex' as const,
+        walletRemark: asset.exchange.toUpperCase(),
+        token: position.product,
+        valueUSD: position.valueUSD,
+        apr: position.apr,
+        dailyIncome: (position.valueUSD * position.apr) / 365 / 100
+      }))
+  );
 
   // 合并所有生息资产
   const yieldingPositions = [...onChainYieldingPositions, ...cexYieldingPositions];

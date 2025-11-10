@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
+import { calculateWalletYield, calculateCEXYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
 import { NetWorthRecord, OnChainAsset, CEXAsset, BankAsset } from '@/types';
 import { ArrowLeft, Save, Plus, Trash2, Calendar } from 'lucide-react';
 import Link from 'next/link';
@@ -144,8 +144,13 @@ export default function EditRecord() {
     const newAsset: CEXAsset = {
       id: Date.now().toString(),
       exchange: 'binance',
+      positions: [],
       totalValueUSD: 0,
-      apr: 0
+      yieldValueUSD: 0,
+      totalAPR: 0,
+      dailyIncome: 0,
+      monthlyIncome: 0,
+      yearlyIncome: 0
     };
     setRecord({
       ...record,
@@ -464,7 +469,7 @@ export default function EditRecord() {
             </div>
             {(record.cexAssets || []).map((asset, index) => (
               <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">交易所</label>
                     <select
@@ -498,48 +503,132 @@ export default function EditRecord() {
                       style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">APR (%)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={asset.apr || ''}
-                    onChange={(e) => {
-                      const newAssets = [...record.cexAssets];
-                      const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
-                      newAssets[index].apr = value;
-                      setRecord({ ...record, cexAssets: newAssets });
-                    }}
-                    className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    style={{ colorScheme: 'light' }}
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-              
-              {/* 交易所收益概览 */}
-              {asset.apr && asset.apr > 0 && (
-                <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded">
-                  <h5 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">收益概览</h5>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">日收入:</span>
-                      <span className="ml-1 font-medium">${((asset.totalValueUSD * asset.apr) / 365 / 100).toFixed(2)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">月收入:</span>
-                      <span className="ml-1 font-medium">${((asset.totalValueUSD * asset.apr) / 365 / 100 * 30).toFixed(2)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">年收入:</span>
-                      <span className="ml-1 font-medium">${((asset.totalValueUSD * asset.apr) / 100).toFixed(2)}</span>
-                    </div>
                   </div>
                 </div>
-              )}
-              
-              <button
+
+                {/* 仓位管理 */}
+                <div className="mt-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">仓位管理</h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newAssets = [...record.cexAssets];
+                        const newPosition = {
+                          id: Date.now().toString(),
+                          product: '',
+                          valueUSD: 0,
+                          apr: 0
+                        };
+                        newAssets[index].positions.push(newPosition);
+                        setRecord({ ...record, cexAssets: newAssets });
+                      }}
+                      className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      添加仓位
+                    </button>
+                  </div>
+                  
+                  {(asset.positions || []).map((position, posIndex) => (
+                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">产品</label>
+                        <input
+                          type="text"
+                          value={position.product}
+                          onChange={(e) => {
+                            const newAssets = [...record.cexAssets];
+                            newAssets[index].positions[posIndex].product = e.target.value;
+                            setRecord({ ...record, cexAssets: newAssets });
+                          }}
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                          style={{ colorScheme: 'light' }}
+                          placeholder="理财/Earn/活期"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">价值 (USD)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={position.valueUSD || ''}
+                          onChange={(e) => {
+                            const newAssets = [...record.cexAssets];
+                            const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                            newAssets[index].positions[posIndex].valueUSD = value;
+                            setRecord({ ...record, cexAssets: newAssets });
+                          }}
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                          style={{ colorScheme: 'light' }}
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">APR (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={position.apr || ''}
+                          onChange={(e) => {
+                            const newAssets = [...record.cexAssets];
+                            const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                            newAssets[index].positions[posIndex].apr = value;
+                            setRecord({ ...record, cexAssets: newAssets });
+                          }}
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                          style={{ colorScheme: 'light' }}
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newAssets = [...record.cexAssets];
+                          newAssets[index].positions.splice(posIndex, 1);
+                          setRecord({ ...record, cexAssets: newAssets });
+                        }}
+                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-xs"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* 交易所收益概览 */}
+                  {(asset.positions || []).length > 0 && (
+                    <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded">
+                      <h5 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">收益概览</h5>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">仓位总价值:</span>
+                          <span className="ml-1 font-medium">${(() => {
+                            const positionsTotal = (asset.positions || []).reduce((sum, position) => sum + position.valueUSD, 0);
+                            return positionsTotal.toFixed(2);
+                          })()}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">生息价值:</span>
+                          <span className="ml-1 font-medium">${calculateCEXYield(asset).yieldValueUSD.toFixed(2)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">总APR:</span>
+                          <span className="ml-1 font-medium">{calculateCEXYield(asset).totalAPR.toFixed(2)}%</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">日收入:</span>
+                          <span className="ml-1 font-medium">${calculateCEXYield(asset).dailyIncome.toFixed(2)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">年收入:</span>
+                          <span className="ml-1 font-medium">${calculateCEXYield(asset).yearlyIncome.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <button
                    type="button"
                    onClick={() => {
                      const newAssets = (record.cexAssets || []).filter((_, i) => i !== index);

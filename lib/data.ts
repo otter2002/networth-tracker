@@ -38,6 +38,41 @@ export function calculateWalletYield(asset: OnChainAsset): OnChainAsset {
   };
 }
 
+// 计算单个交易所的收益
+export function calculateCEXYield(asset: CEXAsset): CEXAsset {
+  let yieldValue = 0; // 生息仓位总价值
+  let totalDailyIncome = 0;
+  let totalYearlyIncome = 0;
+  let totalAPR = 0;
+
+  if (asset.positions && asset.positions.length > 0) {
+    asset.positions.forEach(position => {
+      // 只有APR > 0的仓位才计算收益
+      if (position.apr > 0) {
+        yieldValue += position.valueUSD;
+        const dailyIncome = (position.valueUSD * position.apr) / 365 / 100;
+        const yearlyIncome = position.valueUSD * position.apr / 100;
+        totalDailyIncome += dailyIncome;
+        totalYearlyIncome += yearlyIncome;
+      }
+    });
+    
+    // APR基于生息仓位计算
+    totalAPR = yieldValue > 0 ? (totalYearlyIncome / yieldValue) * 100 : 0;
+  }
+
+  return {
+    ...asset,
+    // 保持手动编辑的总价值不变
+    totalValueUSD: asset.totalValueUSD,
+    yieldValueUSD: yieldValue,
+    totalAPR,
+    dailyIncome: totalDailyIncome,
+    monthlyIncome: totalDailyIncome * 30,
+    yearlyIncome: totalYearlyIncome
+  };
+}
+
 // 计算总收益
 export function calculateYield(record: NetWorthRecord): YieldCalculation {
   let totalValue = 0;
@@ -57,14 +92,10 @@ export function calculateYield(record: NetWorthRecord): YieldCalculation {
   // 计算交易所资产收益
   if (record.cexAssets && record.cexAssets.length > 0) {
     record.cexAssets.forEach(asset => {
-      totalValue += asset.totalValueUSD;
-      // 如果有APR，计算收益
-      if (asset.apr && asset.apr > 0) {
-        const dailyIncome = (asset.totalValueUSD * asset.apr) / 365 / 100;
-        const yearlyIncome = asset.totalValueUSD * asset.apr / 100;
-        totalDailyYield += dailyIncome;
-        totalAnnualYield += yearlyIncome;
-      }
+      const calculatedAsset = calculateCEXYield(asset);
+      totalValue += calculatedAsset.totalValueUSD;
+      totalDailyYield += calculatedAsset.dailyIncome;
+      totalAnnualYield += calculatedAsset.yearlyIncome;
     });
   }
 
@@ -177,8 +208,28 @@ const initialData: NetWorthRecord[] = [
       }
     ],
     cexAssets: [
-      { id: '1', exchange: 'okx', totalValueUSD: 51465 },
-      { id: '2', exchange: 'binance', totalValueUSD: 666219 }
+      {
+        id: '1',
+        exchange: 'okx',
+        totalValueUSD: 51465,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '2',
+        exchange: 'binance',
+        totalValueUSD: 666219,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      }
     ],
     bankAssets: [
       {
@@ -273,8 +324,28 @@ const initialData: NetWorthRecord[] = [
       }
     ],
     cexAssets: [
-      { id: '1', exchange: 'okx', totalValueUSD: 491 },
-      { id: '2', exchange: 'binance', totalValueUSD: 733127 }
+      {
+        id: '1',
+        exchange: 'okx',
+        totalValueUSD: 491,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '2',
+        exchange: 'binance',
+        totalValueUSD: 733127,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      }
     ],
     bankAssets: [
       {
@@ -369,9 +440,39 @@ const initialData: NetWorthRecord[] = [
       }
     ],
     cexAssets: [
-      { id: '1', exchange: 'okx', totalValueUSD: 1205.73 },
-      { id: '2', exchange: 'binance', totalValueUSD: 350236.19 },
-      { id: '3', exchange: 'bitget', totalValueUSD: 42040 }
+      {
+        id: '1',
+        exchange: 'okx',
+        totalValueUSD: 1205.73,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '2',
+        exchange: 'binance',
+        totalValueUSD: 350236.19,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '3',
+        exchange: 'bitget',
+        totalValueUSD: 42040,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      }
     ],
     bankAssets: [
       {
@@ -466,9 +567,39 @@ const initialData: NetWorthRecord[] = [
       }
     ],
     cexAssets: [
-      { id: '1', exchange: 'okx', totalValueUSD: 11194 },
-      { id: '2', exchange: 'binance', totalValueUSD: 558956 },
-      { id: '3', exchange: 'bitget', totalValueUSD: 124750 }
+      {
+        id: '1',
+        exchange: 'okx',
+        totalValueUSD: 11194,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '2',
+        exchange: 'binance',
+        totalValueUSD: 558956,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '3',
+        exchange: 'bitget',
+        totalValueUSD: 124750,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      }
     ],
     bankAssets: [
       {
@@ -563,9 +694,39 @@ const initialData: NetWorthRecord[] = [
       }
     ],
     cexAssets: [
-      { id: '1', exchange: 'okx', totalValueUSD: 11194 },
-      { id: '2', exchange: 'binance', totalValueUSD: 558956 },
-      { id: '3', exchange: 'bitget', totalValueUSD: 124750 }
+      {
+        id: '1',
+        exchange: 'okx',
+        totalValueUSD: 11194,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '2',
+        exchange: 'binance',
+        totalValueUSD: 558956,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      },
+      {
+        id: '3',
+        exchange: 'bitget',
+        totalValueUSD: 124750,
+        positions: [],
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
+      }
     ],
     bankAssets: [
       {
