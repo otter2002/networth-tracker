@@ -35,10 +35,22 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
 
   // 重新计算净资产（基于实际资产，不依赖存储的totalValue）
   const calculateActualNetWorth = (record: NetWorthRecord) => {
-    const onChainTotal = (record.onChainAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-    const cexTotal = (record.cexAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-    const bankTotal = (record.bankAssets || []).reduce((sum, asset) => sum + asset.valueUSD, 0);
-    return onChainTotal + cexTotal + bankTotal;
+    const onChainTotal = (record.onChainAssets || []).reduce((sum, asset) => sum + (asset.totalValueUSD || 0), 0);
+    const cexTotal = (record.cexAssets || []).reduce((sum, asset) => sum + (asset.totalValueUSD || 0), 0);
+    const bankTotal = (record.bankAssets || []).reduce((sum, asset) => sum + (asset.valueUSD || 0), 0);
+    const total = onChainTotal + cexTotal + bankTotal;
+    
+    // 调试信息
+    console.log('计算净资产:', {
+      date: record.date,
+      onChainTotal,
+      cexTotal,
+      bankTotal,
+      total,
+      storedTotal: record.totalValue
+    });
+    
+    return total;
   };
 
   // records已按日期降序排列，第一个是最新的
