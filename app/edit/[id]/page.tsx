@@ -226,7 +226,7 @@ export default function EditRecord() {
                   type="date"
                   value={record.date}
                   onChange={(e) => setRecord({ ...record, date: e.target.value })}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                   required
                 />
               </div>
@@ -268,12 +268,12 @@ export default function EditRecord() {
                     <input
                       type="text"
                       value={asset.walletAddress}
-                                             onChange={(e) => {
-                         const newAssets = [...(record.onChainAssets || [])];
-                         newAssets[index].walletAddress = e.target.value;
-                         setRecord({ ...record, onChainAssets: newAssets });
-                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                           onChange={(e) => {
+                       const newAssets = [...(record.onChainAssets || [])];
+                       newAssets[index].walletAddress = e.target.value;
+                       setRecord({ ...record, onChainAssets: newAssets });
+                     }}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0x..."
                     />
                   </div>
@@ -282,12 +282,12 @@ export default function EditRecord() {
                     <input
                       type="text"
                       value={asset.remark}
-                                             onChange={(e) => {
-                         const newAssets = [...(record.onChainAssets || [])];
-                         newAssets[index].remark = e.target.value;
-                         setRecord({ ...record, onChainAssets: newAssets });
-                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                           onChange={(e) => {
+                       const newAssets = [...(record.onChainAssets || [])];
+                       newAssets[index].remark = e.target.value;
+                       setRecord({ ...record, onChainAssets: newAssets });
+                     }}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="钱包备注"
                     />
                   </div>
@@ -302,7 +302,7 @@ export default function EditRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setRecord({ ...record, onChainAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0.00"
                     />
                   </div>
@@ -344,7 +344,7 @@ export default function EditRecord() {
                             newAssets[index].positions[posIndex].token = e.target.value;
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
                           placeholder="USDC"
                         />
                       </div>
@@ -360,7 +360,7 @@ export default function EditRecord() {
                             newAssets[index].positions[posIndex].valueUSD = value;
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
                           placeholder="0.00"
                         />
                       </div>
@@ -376,7 +376,7 @@ export default function EditRecord() {
                             newAssets[index].positions[posIndex].apr = value;
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
                           placeholder="0.00"
                         />
                       </div>
@@ -466,7 +466,7 @@ export default function EditRecord() {
                         newAssets[index].exchange = e.target.value as any;
                         setRecord({ ...record, cexAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="binance">Binance</option>
                       <option value="okx">OKX</option>
@@ -485,7 +485,7 @@ export default function EditRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setRecord({ ...record, cexAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0.00"
                     />
                   </div>
@@ -535,7 +535,7 @@ export default function EditRecord() {
                         }
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="za bank">ZA Bank</option>
                       <option value="hsbc hk">HSBC HK</option>
@@ -554,7 +554,7 @@ export default function EditRecord() {
                         newAssets[index].depositType = e.target.value as BankAsset['depositType'];
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="活期">活期</option>
                       <option value="定期">定期</option>
@@ -575,7 +575,7 @@ export default function EditRecord() {
                         newAssets[index].valueUSD = newAssets[index].amount * exchangeRate;
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="USD">美元 (USD)</option>
                       <option value="HKD">港币 (HKD)</option>
@@ -598,7 +598,7 @@ export default function EditRecord() {
                         newAssets[index].valueUSD = value * newAssets[index].exchangeRate;
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0.00"
                     />
                   </div>

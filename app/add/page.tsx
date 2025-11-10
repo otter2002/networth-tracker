@@ -210,7 +210,7 @@ export default function AddRecord() {
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 [color-scheme:light]"
                 required
               />
             </div>
@@ -257,7 +257,7 @@ export default function AddRecord() {
                         newAssets[index].walletAddress = e.target.value;
                         setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0x..."
                     />
                   </div>
@@ -271,7 +271,7 @@ export default function AddRecord() {
                         newAssets[index].remark = e.target.value;
                         setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="钱包备注"
                     />
                   </div>
@@ -286,7 +286,7 @@ export default function AddRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0.00"
                     />
                   </div>
@@ -328,7 +328,7 @@ export default function AddRecord() {
                             newAssets[index].positions[posIndex].token = e.target.value;
                             setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
                           placeholder="USDC"
                         />
                       </div>
@@ -344,7 +344,7 @@ export default function AddRecord() {
                             newAssets[index].positions[posIndex].valueUSD = value;
                             setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
                           placeholder="0.00"
                         />
                       </div>
@@ -360,7 +360,7 @@ export default function AddRecord() {
                             newAssets[index].positions[posIndex].apr = value;
                             setFormData(prev => ({ ...prev, onChainAssets: newAssets }));
                           }}
-                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
                           placeholder="0.00"
                         />
                       </div>
@@ -450,7 +450,7 @@ export default function AddRecord() {
                         newAssets[index].exchange = e.target.value as any;
                         setFormData(prev => ({ ...prev, cexAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="binance">Binance</option>
                       <option value="okx">OKX</option>
@@ -469,7 +469,7 @@ export default function AddRecord() {
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
                         setFormData(prev => ({ ...prev, cexAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0.00"
                     />
                   </div>
@@ -519,7 +519,7 @@ export default function AddRecord() {
                         }
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="za bank">ZA Bank</option>
                       <option value="hsbc hk">HSBC HK</option>
@@ -538,7 +538,7 @@ export default function AddRecord() {
                         newAssets[index].depositType = e.target.value as BankAsset['depositType'];
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="活期">活期</option>
                       <option value="定期">定期</option>
@@ -559,7 +559,7 @@ export default function AddRecord() {
                         newAssets[index].valueUSD = newAssets[index].amount * exchangeRate;
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     >
                       <option value="USD">美元 (USD)</option>
                       <option value="HKD">港币 (HKD)</option>
@@ -582,7 +582,7 @@ export default function AddRecord() {
                         newAssets[index].valueUSD = value * newAssets[index].exchangeRate;
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                       placeholder="0.00"
                     />
                   </div>
