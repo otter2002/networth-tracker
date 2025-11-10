@@ -1,15 +1,12 @@
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 
-// 使用 Neon 连接字符串，优先级：DATABASE_URL > POSTGRES_URL > 硬编码回退
-const DATABASE_URL =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  'postgres://neondb_owner:npg_fp6QFIUbgSx9@ep-twilight-bonus-a1qwiq71.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
+// 使用 Neon 连接字符串，优先级：DATABASE_URL > POSTGRES_URL
+const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
 // 验证连接字符串
-if (!DATABASE_URL || DATABASE_URL === 'your-database-url') {
-  throw new Error('Valid DATABASE_URL or POSTGRES_URL environment variable is required');
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL or POSTGRES_URL environment variable is required');
 }
 
 // 创建 Neon 连接，优化serverless环境
