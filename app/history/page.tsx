@@ -76,18 +76,18 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-6">
             <Link
               href="/"
-              className="mr-4 p-2 text-gray-400 hover:text-gray-600"
+              className="mr-4 p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">历史记录</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">历史记录</h1>
           </div>
         </div>
       </header>
@@ -95,9 +95,9 @@ export default function HistoryPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {records.length === 0 ? (
           <div className="text-center py-12">
-            <Calendar className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">暂无历史记录</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <Calendar className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">暂无历史记录</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               开始添加您的第一笔净资产记录
             </p>
             <div className="mt-6">
@@ -112,18 +112,18 @@ export default function HistoryPage() {
         ) : (
           <div className="space-y-6">
             {records.map((record) => (
-              <div key={record.id} className="bg-white shadow rounded-lg p-6">
+              <div key={record.id} className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center">
-                      <Calendar className="w-5 h-5 text-gray-400 mr-2" />
-                      <span className="text-lg font-semibold text-gray-900">
+                      <Calendar className="w-5 h-5 text-gray-400 dark:text-gray-500 mr-2" />
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
                         {record.date}
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <DollarSign className="w-5 h-5 text-green-400 mr-2" />
-                      <span className="text-lg font-semibold text-green-600">
+                      <DollarSign className="w-5 h-5 text-green-400 dark:text-green-500 mr-2" />
+                      <span className="text-lg font-semibold text-green-600 dark:text-green-400">
                         {formatValue(record.totalValue)}
                       </span>
                     </div>
@@ -131,14 +131,14 @@ export default function HistoryPage() {
                   <div className="flex items-center space-x-2">
                     <Link
                       href={`/edit/${record.id}`}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       <Edit className="w-4 h-4 mr-1" />
                       编辑
                     </Link>
                     <button
                       onClick={() => handleDelete(record.id)}
-                      className="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      className="inline-flex items-center px-3 py-2 border border-red-300 dark:border-red-700 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 dark:text-red-400 bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                     >
                       <Trash2 className="w-4 h-4 mr-1" />
                       删除
@@ -148,9 +148,9 @@ export default function HistoryPage() {
 
                 {/* 资产概览 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <h3 className="text-sm font-medium text-blue-800">链上资产</h3>
-                    <p className="text-lg font-semibold text-blue-900">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">链上资产</h3>
+                    <p className="text-lg font-semibold text-blue-900 dark:text-blue-200">
                       {formatValue(
                         (Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {}))
                           .reduce((sum: number, asset: any) => {
@@ -160,13 +160,13 @@ export default function HistoryPage() {
                           }, 0)
                       )}
                     </p>
-                    <p className="text-sm text-blue-600">
+                    <p className="text-sm text-blue-600 dark:text-blue-400">
                       {Array.isArray(record.onChainAssets) ? record.onChainAssets.length : Object.keys(record.onChainAssets || {}).length} 个钱包
                     </p>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="text-sm font-medium text-green-800">交易所资产</h3>
-                    <p className="text-lg font-semibold text-green-900">
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-green-800 dark:text-green-300">交易所资产</h3>
+                    <p className="text-lg font-semibold text-green-900 dark:text-green-200">
                       {formatValue(
                         (Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {}))
                           .reduce((sum: number, asset: any) => {
@@ -176,13 +176,13 @@ export default function HistoryPage() {
                           }, 0)
                       )}
                     </p>
-                    <p className="text-sm text-green-600">
+                    <p className="text-sm text-green-600 dark:text-green-400">
                       {Array.isArray(record.cexAssets) ? record.cexAssets.length : Object.keys(record.cexAssets || {}).length} 个交易所
                     </p>
                   </div>
-                  <div className="bg-purple-50 rounded-lg p-4">
-                    <h3 className="text-sm font-medium text-purple-800">银行资产</h3>
-                    <p className="text-lg font-semibold text-purple-900">
+                  <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-purple-800 dark:text-purple-300">银行资产</h3>
+                    <p className="text-lg font-semibold text-purple-900 dark:text-purple-200">
                       {formatValue(
                         (Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {}))
                           .reduce((sum: number, asset: any) => {
@@ -192,7 +192,7 @@ export default function HistoryPage() {
                           }, 0)
                       )}
                     </p>
-                    <p className="text-sm text-purple-600">
+                    <p className="text-sm text-purple-600 dark:text-purple-400">
                       {Array.isArray(record.bankAssets) ? record.bankAssets.length : Object.keys(record.bankAssets || {}).length} 个机构
                     </p>
                   </div>
@@ -203,13 +203,13 @@ export default function HistoryPage() {
                   {/* 链上资产 */}
                   {(record.onChainAssets || []).length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">链上资产详情</h4>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">链上资产详情</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         {record.onChainAssets.map((asset) => (
-                          <div key={asset.id} className="bg-gray-50 rounded p-3">
-                            <div className="text-sm font-medium text-gray-900">{asset.remark || '未命名钱包'}</div>
-                            <div className="text-xs text-gray-500">{asset.walletAddress || '地址未设置'}</div>
-                            <div className="text-sm text-blue-600">{formatValue(asset.totalValueUSD)}</div>
+                          <div key={asset.id} className="bg-gray-50 dark:bg-gray-700 rounded p-3">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{asset.remark || '未命名钱包'}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{asset.walletAddress || '地址未设置'}</div>
+                            <div className="text-sm text-blue-600 dark:text-blue-400">{formatValue(asset.totalValueUSD)}</div>
                           </div>
                         ))}
                       </div>
@@ -219,12 +219,12 @@ export default function HistoryPage() {
                   {/* 交易所资产 */}
                   {(record.cexAssets || []).length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">交易所资产详情</h4>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">交易所资产详情</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
                         {record.cexAssets.map((asset) => (
-                          <div key={asset.id} className="bg-gray-50 rounded p-3">
-                            <div className="text-sm font-medium text-gray-900">{asset.exchange.toUpperCase()}</div>
-                            <div className="text-sm text-green-600">{formatValue(asset.totalValueUSD)}</div>
+                          <div key={asset.id} className="bg-gray-50 dark:bg-gray-700 rounded p-3">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{asset.exchange.toUpperCase()}</div>
+                            <div className="text-sm text-green-600 dark:text-green-400">{formatValue(asset.totalValueUSD)}</div>
                           </div>
                         ))}
                       </div>
@@ -234,15 +234,15 @@ export default function HistoryPage() {
                   {/* 银行资产 */}
                   {(record.bankAssets || []).length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">银行资产详情</h4>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">银行资产详情</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         {record.bankAssets.map((asset) => (
-                          <div key={asset.id} className="bg-gray-50 rounded p-3">
-                            <div className="text-sm font-medium text-gray-900">{asset.institution}</div>
-                            <div className="text-xs text-gray-500">
+                          <div key={asset.id} className="bg-gray-50 dark:bg-gray-700 rounded p-3">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{asset.institution}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
                               {asset.depositType} - {asset.currency}
                             </div>
-                            <div className="text-sm text-purple-600">{formatValue(asset.valueUSD)}</div>
+                            <div className="text-sm text-purple-600 dark:text-purple-400">{formatValue(asset.valueUSD)}</div>
                           </div>
                         ))}
                       </div>

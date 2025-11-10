@@ -645,15 +645,15 @@ export default function AddRecord() {
 
         {/* 模板选择器模态框 */}
         {showTemplateSelector && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+          <div className="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-70 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
               <div className="mt-3">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white">选择历史记录作为模板</h3>
                   <button
                     type="button"
                     onClick={() => setShowTemplateSelector(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     <span className="sr-only">关闭</span>
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -664,13 +664,13 @@ export default function AddRecord() {
                 
                 <div className="max-h-96 overflow-y-auto">
                   {historicalRecords.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">暂无历史记录</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">暂无历史记录</p>
                   ) : (
                     <div className="space-y-3">
                       {historicalRecords.map((record) => (
-                        <div 
-                          key={record.id} 
-                          className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                        <div
+                          key={record.id}
+                          className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                           onClick={() => loadTemplate(record)}
                         >
                           <div className="flex justify-between items-start">
@@ -679,7 +679,7 @@ export default function AddRecord() {
                                 <h4 className="text-sm font-medium text-gray-900 dark:text-white">
                                   {new Date(record.date).toLocaleDateString('zh-CN')}
                                 </h4>
-                                <span className="text-sm font-medium text-green-600">
+                                <span className="text-sm font-medium text-green-600 dark:text-green-400">
                                   ${record.totalValue.toLocaleString()}
                                 </span>
                               </div>
@@ -713,7 +713,7 @@ export default function AddRecord() {
                   <button
                     type="button"
                     onClick={() => setShowTemplateSelector(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     取消
                   </button>
