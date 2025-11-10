@@ -33,12 +33,24 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
 
   if (records.length === 0) return null;
 
+  // 重新计算净资产（基于实际资产，不依赖存储的totalValue）
+  const calculateActualNetWorth = (record: NetWorthRecord) => {
+    const onChainTotal = (record.onChainAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0);
+    const cexTotal = (record.cexAssets || []).reduce((sum, asset) => sum + asset.totalValueUSD, 0);
+    const bankTotal = (record.bankAssets || []).reduce((sum, asset) => sum + asset.valueUSD, 0);
+    return onChainTotal + cexTotal + bankTotal;
+  };
+
   // records已按日期降序排列，第一个是最新的
   const latest = records[0];
   const previous = records.length > 1 ? records[1] : null;
   
-  const change = previous ? latest.totalValue - previous.totalValue : 0;
-  const changePercent = previous ? (change / previous.totalValue) * 100 : 0;
+  // 使用重新计算的净资产
+  const latestValue = calculateActualNetWorth(latest);
+  const previousValue = previous ? calculateActualNetWorth(previous) : 0;
+  
+  const change = previous ? latestValue - previousValue : 0;
+  const changePercent = previous && previousValue > 0 ? (change / previousValue) * 100 : 0;
   
   // 货币转换 - 使用实时汇率
   let exchangeRate = 1;
@@ -47,7 +59,7 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
   } else if (currency === 'CNY') {
     exchangeRate = exchangeRates['CNY'] || getExchangeRate('CNY');
   }
-  const currentValue = latest.totalValue * exchangeRate;
+  const currentValue = latestValue * exchangeRate;
   const changeValue = change * exchangeRate;
   
   const formatValue = (value: number) => {
