@@ -6,6 +6,7 @@ import { AssetBreakdown } from '@/components/AssetBreakdown';
 import { AssetComposition } from '@/components/AssetComposition';
 import { NetWorthSummary } from '@/components/NetWorthSummary';
 import { YieldSummary } from '@/components/YieldSummary';
+import { BankAssetTrend } from '@/components/BankAssetTrend';
 import { NetWorthRecord } from '@/types';
 import { fetchExchangeRates } from '@/lib/data';
 import { Plus, BarChart3, PieChart, TrendingUp, Wallet, Building2, Banknote, Calendar } from 'lucide-react';
@@ -156,6 +157,13 @@ export default function Dashboard() {
                 {latestRecord && <AssetBreakdown record={latestRecord} currency={currency} language={language} />}
               </div>
             </div>
+
+            {/* Bank Asset Trend */}
+            {records.length > 1 && (
+              <div className="mb-8">
+                <BankAssetTrend records={records} language={language} currency={currency} />
+              </div>
+            )}
 
             {/* Asset Composition */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
