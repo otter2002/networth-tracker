@@ -227,6 +227,7 @@ export default function EditRecord() {
                   value={record.date}
                   onChange={(e) => setRecord({ ...record, date: e.target.value })}
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                  style={{ colorScheme: 'light' }}
                   required
                 />
               </div>
@@ -274,6 +275,7 @@ export default function EditRecord() {
                        setRecord({ ...record, onChainAssets: newAssets });
                      }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                       placeholder="0x..."
                     />
                   </div>
@@ -288,6 +290,7 @@ export default function EditRecord() {
                        setRecord({ ...record, onChainAssets: newAssets });
                      }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                       placeholder="钱包备注"
                     />
                   </div>
@@ -303,6 +306,7 @@ export default function EditRecord() {
                         setRecord({ ...record, onChainAssets: newAssets });
                       }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
                   </div>
@@ -345,6 +349,7 @@ export default function EditRecord() {
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
                           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          style={{ colorScheme: 'light' }}
                           placeholder="USDC"
                         />
                       </div>
@@ -361,6 +366,7 @@ export default function EditRecord() {
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
                           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          style={{ colorScheme: 'light' }}
                           placeholder="0.00"
                         />
                       </div>
@@ -377,6 +383,7 @@ export default function EditRecord() {
                             setRecord({ ...record, onChainAssets: newAssets });
                           }}
                           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
+                          style={{ colorScheme: 'light' }}
                           placeholder="0.00"
                         />
                       </div>
@@ -467,6 +474,7 @@ export default function EditRecord() {
                         setRecord({ ...record, cexAssets: newAssets });
                       }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                     >
                       <option value="binance">Binance</option>
                       <option value="okx">OKX</option>
@@ -486,6 +494,7 @@ export default function EditRecord() {
                         setRecord({ ...record, cexAssets: newAssets });
                       }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
                   </div>
@@ -536,6 +545,7 @@ export default function EditRecord() {
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                     >
                       <option value="za bank">ZA Bank</option>
                       <option value="hsbc hk">HSBC HK</option>
@@ -555,6 +565,7 @@ export default function EditRecord() {
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                     >
                       <option value="活期">活期</option>
                       <option value="定期">定期</option>
@@ -576,6 +587,7 @@ export default function EditRecord() {
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                     >
                       <option value="USD">美元 (USD)</option>
                       <option value="HKD">港币 (HKD)</option>
@@ -599,6 +611,7 @@ export default function EditRecord() {
                         setRecord({ ...record, bankAssets: newAssets });
                       }}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      style={{ colorScheme: 'light' }}
                       placeholder="0.00"
                     />
                   </div>
