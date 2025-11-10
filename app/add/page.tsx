@@ -171,18 +171,18 @@ export default function AddRecord() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-6">
             <Link
               href="/"
-              className="mr-4 p-2 text-gray-400 hover:text-gray-600"
+              className="mr-4 p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">添加净资产记录</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">添加净资产记录</h1>
           </div>
         </div>
       </header>
@@ -190,39 +190,39 @@ export default function AddRecord() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* 基本信息 */}
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">基本信息</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">基本信息</h2>
               <button
                 type="button"
                 onClick={() => setShowTemplateSelector(true)}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <History className="w-4 h-4 mr-2" />
                 使用历史记录作为模板
               </button>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 日期
               </label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
               />
             </div>
             {templateLoaded && (
-              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-sm text-green-800">
+              <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-800 dark:text-green-200">
                   ✅ 模板已加载成功！请根据需要调整资产信息和数值
                 </p>
               </div>
             )}
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
                 💡 总价值将根据下方填写的资产自动计算
               </p>
             </div>
@@ -232,23 +232,23 @@ export default function AddRecord() {
           <ExchangeRateDisplay />
 
           {/* 链上资产 */}
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">链上资产</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">链上资产</h2>
               <button
                 type="button"
                 onClick={addOnChainAsset}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 添加钱包
               </button>
             </div>
             {formData.onChainAssets.map((asset, index) => (
-              <div key={asset.id} className="border rounded-lg p-4 mb-4">
+              <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">钱包地址</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">钱包地址</label>
                     <input
                       type="text"
                       value={asset.walletAddress}
@@ -262,7 +262,7 @@ export default function AddRecord() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">备注名</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">备注名</label>
                     <input
                       type="text"
                       value={asset.remark}
@@ -276,7 +276,7 @@ export default function AddRecord() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">总价值 (USD)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">总价值 (USD)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -295,7 +295,7 @@ export default function AddRecord() {
                 {/* 仓位管理 */}
                 <div className="mt-4">
                   <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-sm font-medium text-gray-700">仓位管理</h4>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">仓位管理</h4>
                     <button
                       type="button"
                       onClick={() => {
@@ -319,7 +319,7 @@ export default function AddRecord() {
                   {asset.positions.map((position, posIndex) => (
                     <div key={position.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 rounded">
                       <div>
-                        <label className="block text-xs font-medium text-gray-700">代币</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">代币</label>
                         <input
                           type="text"
                           value={position.token}
@@ -333,7 +333,7 @@ export default function AddRecord() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700">价值 (USD)</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">价值 (USD)</label>
                         <input
                           type="number"
                           step="0.01"
@@ -349,7 +349,7 @@ export default function AddRecord() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700">APR (%)</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">APR (%)</label>
                         <input
                           type="number"
                           step="0.01"
@@ -384,26 +384,26 @@ export default function AddRecord() {
                       <h5 className="text-sm font-medium text-blue-800 mb-2">收益概览</h5>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
                         <div>
-                          <span className="text-gray-600">仓位总价值:</span>
+                          <span className="text-gray-600 dark:text-gray-400">仓位总价值:</span>
                           <span className="ml-1 font-medium">${(() => {
                             const positionsTotal = asset.positions.reduce((sum, position) => sum + position.valueUSD, 0);
                             return positionsTotal.toFixed(2);
                           })()}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">生息价值:</span>
+                          <span className="text-gray-600 dark:text-gray-400">生息价值:</span>
                           <span className="ml-1 font-medium">${calculateWalletYield(asset).yieldValueUSD.toFixed(2)}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">总APR:</span>
+                          <span className="text-gray-600 dark:text-gray-400">总APR:</span>
                           <span className="ml-1 font-medium">{calculateWalletYield(asset).totalAPR.toFixed(2)}%</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">日收入:</span>
+                          <span className="text-gray-600 dark:text-gray-400">日收入:</span>
                           <span className="ml-1 font-medium">${calculateWalletYield(asset).dailyIncome.toFixed(2)}</span>
                         </div>
                         <div>
-                          <span className="text-gray-600">年收入:</span>
+                          <span className="text-gray-600 dark:text-gray-400">年收入:</span>
                           <span className="ml-1 font-medium">${calculateWalletYield(asset).yearlyIncome.toFixed(2)}</span>
                         </div>
                       </div>
@@ -426,9 +426,9 @@ export default function AddRecord() {
           </div>
 
           {/* 中心化交易所资产 */}
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">中心化交易所资产</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">中心化交易所资产</h2>
               <button
                 type="button"
                 onClick={addCEXAsset}
@@ -442,7 +442,7 @@ export default function AddRecord() {
               <div key={asset.id} className="border rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">交易所</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">交易所</label>
                     <select
                       value={asset.exchange}
                       onChange={(e) => {
@@ -459,7 +459,7 @@ export default function AddRecord() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">总价值 (USD)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">总价值 (USD)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -489,9 +489,9 @@ export default function AddRecord() {
           </div>
 
           {/* 银行和券商资产 */}
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">银行和券商资产</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">银行和券商资产</h2>
               <button
                 type="button"
                 onClick={addBankAsset}
@@ -505,7 +505,7 @@ export default function AddRecord() {
               <div key={asset.id} className="border rounded-lg p-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">银行/券商</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">银行/券商</label>
                     <select
                       value={asset.institution}
                       onChange={(e) => {
@@ -530,7 +530,7 @@ export default function AddRecord() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">存款类型</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">存款类型</label>
                     <select
                       value={asset.depositType}
                       onChange={(e) => {
@@ -546,7 +546,7 @@ export default function AddRecord() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">币种</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">币种</label>
                     <select
                       value={asset.currency}
                       onChange={async (e) => {
@@ -570,7 +570,7 @@ export default function AddRecord() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">金额</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">金额</label>
                     <input
                       type="number"
                       step="0.01"
@@ -587,7 +587,7 @@ export default function AddRecord() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">美元价值</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">美元价值</label>
                     <div className="mt-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium">
                       ${asset.valueUSD.toFixed(2)}
                     </div>
@@ -636,7 +636,7 @@ export default function AddRecord() {
             <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
               <div className="mt-3">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-medium text-gray-900">选择历史记录作为模板</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">选择历史记录作为模板</h3>
                   <button
                     type="button"
                     onClick={() => setShowTemplateSelector(false)}
@@ -663,14 +663,14 @@ export default function AddRecord() {
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-2">
-                                <h4 className="text-sm font-medium text-gray-900">
+                                <h4 className="text-sm font-medium text-gray-900 dark:text-white">
                                   {new Date(record.date).toLocaleDateString('zh-CN')}
                                 </h4>
                                 <span className="text-sm font-medium text-green-600">
                                   ${record.totalValue.toLocaleString()}
                                 </span>
                               </div>
-                              <div className="flex flex-wrap gap-2 text-xs text-gray-600">
+                              <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400">
                                 {record.onChainAssets.length > 0 && (
                                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
                                     {record.onChainAssets.length}个链上钱包

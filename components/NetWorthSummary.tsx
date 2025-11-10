@@ -80,18 +80,18 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
   return (
     <>
       {/* 当前净资产 */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <DollarSign className="h-6 w-6 text-gray-400" />
+              <DollarSign className="h-6 w-6 text-gray-400 dark:text-gray-500" />
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                   {language === 'zh' ? '当前净资产' : 'สินทรัพย์สุทธิปัจจุบัน'}
                 </dt>
-                <dd className="text-lg font-medium text-gray-900">
+                <dd className="text-lg font-medium text-gray-900 dark:text-white">
                   {formatValue(currentValue)}
                 </dd>
               </dl>
@@ -101,7 +101,7 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
       </div>
 
       {/* 变化金额 */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -113,10 +113,10 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                   {language === 'zh' ? '变化金额' : 'การเปลี่ยนแปลง'}
                 </dt>
-                <dd className={`text-lg font-medium ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <dd className={`text-lg font-medium ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {formatChange(changeValue)}
                 </dd>
               </dl>
@@ -126,7 +126,7 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
       </div>
 
       {/* 变化百分比 */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -138,10 +138,10 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                   {language === 'zh' ? '变化百分比' : 'เปอร์เซ็นต์การเปลี่ยนแปลง'}
                 </dt>
-                <dd className={`text-lg font-medium ${changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <dd className={`text-lg font-medium ${changePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(2)}%
                 </dd>
               </dl>

@@ -41,33 +41,33 @@ export default function ExchangeRateDisplay() {
   }, []);
 
   return (
-    <div className="bg-white shadow rounded-lg p-4 mb-6">
+    <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4 mb-6">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-sm font-medium text-gray-900">实时汇率 (对美元)</h3>
+        <h3 className="text-sm font-medium text-gray-900 dark:text-white">实时汇率 (对美元)</h3>
         <button
           type="button"
           onClick={updateRates}
           disabled={loading}
-          className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100 disabled:opacity-50"
+          className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 disabled:opacity-50"
         >
           <RefreshCw className={`w-3 h-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
           刷新
         </button>
       </div>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {currencies.map(currency => (
           <div key={currency.code} className="text-center">
-            <div className="text-xs text-gray-500">{currency.name}</div>
-            <div className="text-sm font-medium">
+            <div className="text-xs text-gray-500 dark:text-gray-400">{currency.name}</div>
+            <div className="text-sm font-medium text-gray-900 dark:text-white">
               {currency.code === 'USD' ? '1.000' : rates[currency.code]?.toFixed(4) || '...'}
             </div>
           </div>
         ))}
       </div>
-      
+
       {lastUpdate && (
-        <div className="text-xs text-gray-400 mt-2 text-center">
+        <div className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
           最后更新: {lastUpdate.toLocaleTimeString()}
         </div>
       )}

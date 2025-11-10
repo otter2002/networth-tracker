@@ -46,7 +46,7 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* 日收益 */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -54,10 +54,10 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                   {language === 'zh' ? '日收益' : 'รายได้รายวัน'}
                 </dt>
-                <dd className="text-lg font-medium text-green-600">
+                <dd className="text-lg font-medium text-green-600 dark:text-green-400">
                   {formatValue(yieldData.dailyYield)}
                 </dd>
               </dl>
@@ -67,7 +67,7 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
       </div>
 
       {/* 月收益 */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -75,10 +75,10 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                   {language === 'zh' ? '月收益' : 'รายได้รายเดือน'}
                 </dt>
-                <dd className="text-lg font-medium text-indigo-600">
+                <dd className="text-lg font-medium text-indigo-600 dark:text-indigo-400">
                   {formatValue(yieldData.monthlyYield)}
                 </dd>
               </dl>
@@ -88,7 +88,7 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
       </div>
 
       {/* 年收益 */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -96,10 +96,10 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                   {language === 'zh' ? '年收益' : 'รายได้รายปี'}
                 </dt>
-                <dd className="text-lg font-medium text-blue-600">
+                <dd className="text-lg font-medium text-blue-600 dark:text-blue-400">
                   {formatValue(yieldData.annualYield)}
                 </dd>
               </dl>
@@ -109,7 +109,7 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
       </div>
 
       {/* 总APR */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -117,10 +117,10 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                   {language === 'zh' ? '总APR' : 'APR รวม'}
                 </dt>
-                <dd className="text-lg font-medium text-orange-600">
+                <dd className="text-lg font-medium text-orange-600 dark:text-orange-400">
                   {yieldData.totalAPR.toFixed(2)}%
                 </dd>
               </dl>
