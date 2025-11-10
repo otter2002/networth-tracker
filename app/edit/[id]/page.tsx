@@ -24,9 +24,36 @@ export default function EditRecord() {
           const records = await response.json();
           const foundRecord = records.find((r: NetWorthRecord) => r.id.toString() === recordId);
           if (foundRecord) {
-            // 确保银行资产数据格式正确
+            // 数据迁移：确保所有资产格式正确
             const migratedRecord = {
               ...foundRecord,
+              // 迁移交易所资产到新格式（添加positions）
+              cexAssets: (foundRecord.cexAssets || []).map((asset: any) => {
+                // 如果是旧格式（没有positions），转换为新格式
+                if (!asset.positions) {
+                  return {
+                    id: asset.id,
+                    exchange: asset.exchange,
+                    positions: [],  // 初始化为空数组
+                    totalValueUSD: asset.totalValueUSD || 0,
+                    yieldValueUSD: 0,
+                    totalAPR: 0,
+                    dailyIncome: 0,
+                    monthlyIncome: 0,
+                    yearlyIncome: 0
+                  };
+                }
+                // 如果已经是新格式，确保有所有必要字段
+                return {
+                  ...asset,
+                  positions: asset.positions || [],
+                  yieldValueUSD: asset.yieldValueUSD || 0,
+                  totalAPR: asset.totalAPR || 0,
+                  dailyIncome: asset.dailyIncome || 0,
+                  monthlyIncome: asset.monthlyIncome || 0,
+                  yearlyIncome: asset.yearlyIncome || 0
+                };
+              }),
               bankAssets: (foundRecord.bankAssets || []).map((asset: any) => {
                 // 如果是旧格式，转换为新格式
                 if (asset.fiatCurrencies && !asset.currency) {
