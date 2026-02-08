@@ -11,12 +11,14 @@ interface NetWorthChartProps {
 }
 
 export function NetWorthChart({ records, currency = 'USD', language = 'zh' }: NetWorthChartProps) {
-  // 货币转换
+  // 货币转换（需要取倒数：API返回"外币 per USD"，需要"USD per 外币"）
   let exchangeRate = 1;
   if (currency === 'THB') {
-    exchangeRate = getExchangeRate('THB');
+    const thbRate = getExchangeRate('THB');
+    exchangeRate = thbRate > 0 ? 1 / thbRate : 1;
   } else if (currency === 'CNY') {
-    exchangeRate = getExchangeRate('CNY');
+    const cnyRate = getExchangeRate('CNY');
+    exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
   }
   
   // 按日期升序排列用于图表显示
@@ -24,7 +26,7 @@ export function NetWorthChart({ records, currency = 'USD', language = 'zh' }: Ne
   
   const chartData = sortedRecords.map(record => ({
     date: new Date(record.date).toLocaleDateString(language === 'zh' ? 'zh-CN' : 'th-TH', { month: 'short', day: 'numeric' }),
-    value: record.totalValue * exchangeRate,
+    value: record.totalValue / exchangeRate,
     fullDate: record.date
   }));
 

@@ -34,12 +34,14 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
 
   const breakdown = calculateAssetBreakdown(record);
   
-  // 货币转换 - 使用实时汇率
+  // 货币转换 - 使用实时汇率（需要取倒数：API返回"外币 per USD"，需要"USD per 外币"）
   let exchangeRate = 1;
   if (currency === 'THB') {
-    exchangeRate = exchangeRates['THB'] || getExchangeRate('THB');
+    const thbRate = exchangeRates['THB'] || getExchangeRate('THB');
+    exchangeRate = thbRate > 0 ? 1 / thbRate : 1;
   } else if (currency === 'CNY') {
-    exchangeRate = exchangeRates['CNY'] || getExchangeRate('CNY');
+    const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
+    exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
   }
   
   const data = breakdown.map(item => {
@@ -72,7 +74,7 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
     if (currency === 'THB') symbol = '฿';
     else if (currency === 'CNY') symbol = '¥';
     
-    const convertedValue = value * exchangeRate;
+    const convertedValue = value / exchangeRate;
     
     if (convertedValue >= 1000000) {
       return `${symbol}${(convertedValue / 1000000).toFixed(2)}M`;

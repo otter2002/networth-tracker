@@ -15,17 +15,28 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
   const yieldData = calculateYield(record);
   // 实时汇率状态
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({ USD: 1 });
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     fetchExchangeRates()
-      .then((rates: { [key: string]: number }) => setExchangeRates(rates))
-      .catch((error: any) => console.error('Failed to fetch yields rates:', error));
+      .then((rates: { [key: string]: number }) => {
+        setExchangeRates(rates);
+        setLoading(false);
+      })
+      .catch((error: any) => {
+        console.error('Failed to fetch yields rates:', error);
+        setLoading(false);
+      });
   }, []);
-  // 货币转换倍率
+  
+  // 货币转换倍率 - 需要取倒数（API返回"外币 per USD"，需要"USD per 外币"）
   let exchangeRate = 1;
   if (currency === 'THB') {
-    exchangeRate = exchangeRates['THB'] || getExchangeRate('THB');
+    const thbRate = exchangeRates['THB'] || getExchangeRate('THB');
+    exchangeRate = thbRate > 0 ? 1 / thbRate : 1;
   } else if (currency === 'CNY') {
-    exchangeRate = exchangeRates['CNY'] || getExchangeRate('CNY');
+    const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
+    exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
   }
 
   const formatValue = (value: number) => {
@@ -33,7 +44,7 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
     if (currency === 'THB') symbol = '฿';
     else if (currency === 'CNY') symbol = '¥';
     
-    const convertedValue = value * exchangeRate;
+    const convertedValue = value / exchangeRate;
     
     if (convertedValue >= 1000000) {
       return `${symbol}${(convertedValue / 1000000).toFixed(2)}M`;
