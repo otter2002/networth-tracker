@@ -7,8 +7,8 @@ import { AssetComposition } from '@/components/AssetComposition';
 import { NetWorthSummary } from '@/components/NetWorthSummary';
 import { YieldSummary } from '@/components/YieldSummary';
 import { BankAssetTrend } from '@/components/BankAssetTrend';
-import { NetWorthRecord } from '@/types';
-import { fetchExchangeRates } from '@/lib/data';
+import { NetWorthRecord, YieldCalculation } from '@/types';
+import { fetchExchangeRates, calculateYield } from '@/lib/data';
 import { Plus, BarChart3, PieChart, TrendingUp, Wallet, Building2, Banknote, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { LanguageCurrencyToggle } from '@/components/LanguageCurrencyToggle';
@@ -19,6 +19,16 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState<'zh' | 'th'>('zh');
   const [currency, setCurrency] = useState<'USD' | 'THB' | 'CNY' | 'JPY'>('USD');
+
+  // 语言切换时自动切换默认货币：泰语→THB，中文→USD
+  const handleLanguageChange = (lang: 'zh' | 'th') => {
+    setLanguage(lang);
+    if (lang === 'th') {
+      setCurrency('THB');
+    } else {
+      setCurrency('USD');
+    }
+  };
 
   useEffect(() => {
     // 每次页面加载前刷新汇率，然后再获取净资产记录
@@ -57,6 +67,14 @@ export default function Dashboard() {
 
   const latestRecord = records[0]; // 已按日期降序排列，第一个是最新的
 
+  // 在页面级别预计算收益数据，确保所有子组件使用相同的计算结果
+  const yieldData = latestRecord ? calculateYield(latestRecord) : null;
+
+  // 调试信息：确认收益数据正确计算
+  if (yieldData) {
+    console.log('页面级收益计算:', { language, currency, dailyYield: yieldData.dailyYield, totalAPR: yieldData.totalAPR });
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
@@ -73,7 +91,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center space-x-3">
               <LanguageCurrencyToggle
-                onLanguageChange={setLanguage}
+                onLanguageChange={handleLanguageChange}
                 onCurrencyChange={setCurrency}
                 currentLanguage={language}
                 currentCurrency={currency}
@@ -130,7 +148,7 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 {language === 'zh' ? '收益概览' : 'ภาพรวมรายได้'}
               </h2>
-              {latestRecord && <YieldSummary record={latestRecord} language={language} currency={currency} />}
+              {latestRecord && yieldData && <YieldSummary key={`yield-${language}-${currency}`} record={latestRecord} language={language} currency={currency} yieldData={yieldData} />}
             </div>
 
             {/* Charts */}
@@ -173,7 +191,7 @@ export default function Dashboard() {
                   {language === 'zh' ? '净资产组合详情' : 'รายละเอียดพอร์ตโฟลิโอ'}
                 </h2>
               </div>
-              {latestRecord && <AssetComposition record={latestRecord} language={language} currency={currency} />}
+              {latestRecord && <AssetComposition key={`composition-${language}-${currency}`} record={latestRecord} language={language} currency={currency} />}
             </div>
           </>
         )}

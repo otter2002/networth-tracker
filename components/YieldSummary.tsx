@@ -1,6 +1,6 @@
 'use client';
 
-import { NetWorthRecord, Currency, Language } from '@/types';
+import { NetWorthRecord, Currency, Language, YieldCalculation } from '@/types';
 import { calculateYield, getExchangeRate, fetchExchangeRates } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, DollarSign, Clock } from 'lucide-react';
@@ -9,14 +9,16 @@ interface YieldSummaryProps {
   record: NetWorthRecord;
   language?: Language;
   currency?: Currency;
+  yieldData?: YieldCalculation;
 }
 
-export function YieldSummary({ record, language = 'zh', currency = 'USD' }: YieldSummaryProps) {
-  const yieldData = calculateYield(record);
+export function YieldSummary({ record, language = 'zh', currency = 'USD', yieldData: externalYieldData }: YieldSummaryProps) {
+  // 优先使用外部传入的收益数据，否则自行计算
+  const yieldData = externalYieldData || calculateYield(record);
   // 实时汇率状态
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({ USD: 1 });
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     fetchExchangeRates()
       .then((rates: { [key: string]: number }) => {
@@ -28,7 +30,7 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
         setLoading(false);
       });
   }, []);
-  
+
   // 货币转换倍率 - 需要取倒数（API返回"外币 per USD"，需要"USD per 外币"）
   let exchangeRate = 1;
   if (currency === 'THB') {
@@ -49,7 +51,7 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
     else if (currency === 'JPY') symbol = '¥';
 
     const convertedValue = value / exchangeRate;
-    
+
     if (convertedValue >= 1000000) {
       return `${symbol}${(convertedValue / 1000000).toFixed(2)}M`;
     } else if (convertedValue >= 1000) {
@@ -161,4 +163,4 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
       </div>
     </div>
   );
-} 
+}
