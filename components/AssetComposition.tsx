@@ -38,13 +38,16 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
   let exchangeRate = 1;
   if (currency === 'THB') {
     const thbRate = exchangeRates['THB'] || getExchangeRate('THB');
-    exchangeRate = thbRate > 0 ? 1 / thbRate : 1;
+    const validRate = (thbRate && thbRate > 0 && isFinite(thbRate)) ? thbRate : 35;
+    exchangeRate = 1 / validRate;
   } else if (currency === 'CNY') {
     const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
-    exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
+    const validRate = (cnyRate && cnyRate > 0 && isFinite(cnyRate)) ? cnyRate : 7.3;
+    exchangeRate = 1 / validRate;
   } else if (currency === 'JPY') {
     const jpyRate = exchangeRates['JPY'] || getExchangeRate('JPY');
-    exchangeRate = jpyRate > 0 ? 1 / jpyRate : 1;
+    const validRate = (jpyRate && jpyRate > 0 && isFinite(jpyRate)) ? jpyRate : 150;
+    exchangeRate = 1 / validRate;
   }
   
   const data = breakdown.map(item => {
