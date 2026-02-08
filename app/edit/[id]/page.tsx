@@ -332,7 +332,7 @@ export default function EditRecord() {
                     <input
                       type="number"
                       step="0.01"
-                      value={asset.totalValueUSD}
+                      value={asset.totalValueUSD || ''}
                       onChange={(e) => {
                         const newAssets = [...(record.onChainAssets || [])];
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
@@ -520,7 +520,7 @@ export default function EditRecord() {
                     <input
                       type="number"
                       step="0.01"
-                      value={asset.totalValueUSD}
+                      value={asset.totalValueUSD || ''}
                       onChange={(e) => {
                         const newAssets = [...record.cexAssets];
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
@@ -758,7 +758,7 @@ export default function EditRecord() {
                     <input
                       type="number"
                       step="0.01"
-                      value={(asset.amount || 0) || ''}
+                      value={asset.amount || ''}
                       onChange={(e) => {
                         const newAssets = [...(record.bankAssets || [])];
                         const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;

@@ -289,7 +289,7 @@ export default function AddRecord() {
                     <input
                       type="number"
                       step="0.01"
-                      value={asset.totalValueUSD}
+                      value={asset.totalValueUSD || ''}
                       onChange={(e) => {
                         const newAssets = [...formData.onChainAssets];
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;
@@ -477,7 +477,7 @@ export default function AddRecord() {
                     <input
                       type="number"
                       step="0.01"
-                      value={asset.totalValueUSD}
+                      value={asset.totalValueUSD || ''}
                       onChange={(e) => {
                         const newAssets = [...formData.cexAssets];
                         newAssets[index].totalValueUSD = parseFloat(e.target.value) || 0;

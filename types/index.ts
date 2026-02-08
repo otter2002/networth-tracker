@@ -49,7 +49,7 @@ export interface BankAsset {
   id: string;
   institution: 'za bank' | 'hsbc hk' | 'bkk bank' | '农业银行' | '民生银行' | '券商'; // 机构名称
   depositType: '活期' | '定期' | '股票'; // 存款类型
-  currency: 'HKD' | 'CNY' | 'USD' | 'THB'; // 币种
+  currency: 'HKD' | 'CNY' | 'USD' | 'THB' | 'JPY'; // 币种
   amount: number; // 金额
   exchangeRate: number; // 汇率（对美元）
   valueUSD: number; // 美元价值（自动计算）
@@ -75,7 +75,7 @@ export interface YieldCalculation {
 }
 
 // 支持的货币类型
-export type Currency = 'USD' | 'THB' | 'CNY';
+export type Currency = 'USD' | 'THB' | 'CNY' | 'JPY';
 export type Language = 'zh' | 'th';
 
 export interface AssetBreakdown {

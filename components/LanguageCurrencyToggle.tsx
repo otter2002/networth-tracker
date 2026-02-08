@@ -5,9 +5,9 @@ import { Globe, DollarSign } from 'lucide-react';
 
 interface LanguageCurrencyToggleProps {
   onLanguageChange: (language: 'zh' | 'th') => void;
-  onCurrencyChange: (currency: 'USD' | 'THB' | 'CNY') => void;
+  onCurrencyChange: (currency: 'USD' | 'THB' | 'CNY' | 'JPY') => void;
   currentLanguage: 'zh' | 'th';
-  currentCurrency: 'USD' | 'THB' | 'CNY';
+  currentCurrency: 'USD' | 'THB' | 'CNY' | 'JPY';
 }
 
 export function LanguageCurrencyToggle({
@@ -124,6 +124,17 @@ export function LanguageCurrencyToggle({
                 }`}
               >
                 THB
+              </button>
+              <button
+                onClick={() => {
+                  onCurrencyChange('JPY');
+                  setShowCurrencyDropdown(false);
+                }}
+                className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                  currentCurrency === 'JPY' ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                }`}
+              >
+                JPY
               </button>
             </div>
           </div>

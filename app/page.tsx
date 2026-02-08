@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [records, setRecords] = useState<NetWorthRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState<'zh' | 'th'>('zh');
-  const [currency, setCurrency] = useState<'USD' | 'THB' | 'CNY'>('USD');
+  const [currency, setCurrency] = useState<'USD' | 'THB' | 'CNY' | 'JPY'>('USD');
 
   useEffect(() => {
     // 每次页面加载前刷新汇率，然后再获取净资产记录

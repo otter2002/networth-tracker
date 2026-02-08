@@ -1,0 +1,22 @@
+
+> networth-tracker@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.33
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 954ms
+ ○ Compiling / ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ ✓ Compiled / in 940ms (1627 modules)
+ GET / 200 in 1053ms
+ ✓ Compiled in 94ms (822 modules)
+ ✓ Compiled /api/networth in 211ms (945 modules)
+ GET /api/networth 200 in 959ms
+ ✓ Compiled in 92ms (822 modules)
+ ✓ Compiled in 55ms (822 modules)
+ ✓ Compiled in 60ms (822 modules)
+ ✓ Compiled in 52ms (822 modules)
+ ✓ Compiled in 94ms (822 modules)

@@ -768,7 +768,8 @@ function migrateBankAssets(record: any): any {
       if (asset.fiatCurrencies && !asset.currency) {
         const currency = Object.keys(asset.fiatCurrencies)[0];
         const amount = asset.fiatCurrencies[currency];
-        const exchangeRate = getExchangeRate(currency);
+        const rateCurrencyPerUSD = getExchangeRate(currency);
+        const exchangeRate = rateCurrencyPerUSD && rateCurrencyPerUSD > 0 ? 1 / rateCurrencyPerUSD : 1; // USD per unit
         return {
           id: asset.id,
           institution: asset.institution === '农行' ? '农业银行' : 
@@ -935,7 +936,8 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     'USD': 1,
     'HKD': 7.8,    // 1 USD = 7.8 HKD
     'CNY': 7.3,    // 1 USD = 7.3 CNY  
-    'THB': 35.0    // 1 USD = 35 THB
+    'THB': 35.0,   // 1 USD = 35 THB
+    'JPY': 150.0   // 1 USD = 150 JPY
   };
   
   return defaultRates;
