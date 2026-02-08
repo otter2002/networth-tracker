@@ -869,7 +869,11 @@ export function calculateExchangeBreakdown(record: NetWorthRecord) {
 
 // 汇率缓存
 let exchangeRatesCache: { [key: string]: number } = {
-  'USD': 1
+  'USD': 1,
+  'HKD': 7.8,     // 1 USD = 7.8 HKD
+  'CNY': 7.3,     // 1 USD = 7.3 CNY
+  'THB': 35.0,    // 1 USD = 35 THB
+  'JPY': 150.0    // 1 USD = 150 JPY
 };
 
 // 汇率缓存时间戳
@@ -940,6 +944,9 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     'JPY': 150.0   // 1 USD = 150 JPY
   };
   
+  // 更新缓存并返回
+  exchangeRatesCache = defaultRates;
+  exchangeRatesTimestamp = Date.now();
   return defaultRates;
 }
 
