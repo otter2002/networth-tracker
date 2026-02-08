@@ -93,7 +93,7 @@ export async function GET() {
     // 如果数据库中没有汇率记录，返回默认汇率
     if (rates.length === 0) {
       // 默认汇率: 1 USD = X 外币
-      const defaultRates = { USD: 1, HKD: 7.8, CNY: 7.3, THB: 35.0 };
+      const defaultRates = { USD: 1, HKD: 7.8, CNY: 7.3, THB: 35.0, JPY: 150.0 };
       return NextResponse.json(defaultRates);
     }
 

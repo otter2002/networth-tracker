@@ -15,7 +15,8 @@ export async function GET() {
         USD: 1,
         CNY: data.rates.CNY || 7.3,
         HKD: data.rates.HKD || 7.8,
-        THB: data.rates.THB || 35.0
+        THB: data.rates.THB || 35.0,
+        JPY: data.rates.JPY || 150.0
       };
       
       console.log('处理后的汇率:', rates);
@@ -31,7 +32,8 @@ export async function GET() {
       USD: 1,
       CNY: 7.25,  // 当前人民币汇率约7.25
       HKD: 7.82,  // 港币汇率约7.82
-      THB: 35.5   // 泰铢汇率约35.5
+      THB: 35.5,  // 泰铢汇率约35.5
+      JPY: 150.0  // 日元汇率约150
     };
     
     return NextResponse.json(defaultRates);
