@@ -880,6 +880,21 @@ let exchangeRatesCache: { [key: string]: number } = {
 let exchangeRatesTimestamp = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1小时缓存
 
+// 默认汇率（1 USD = X 外币）
+const DEFAULT_RATES = {
+  'USD': 1,
+  'HKD': 7.8,
+  'CNY': 7.3,
+  'THB': 35.0,
+  'JPY': 150.0
+};
+
+// 规范化汇率：确保包含所有必要的货币
+function normalizeRates(rates: { [key: string]: number }): { [key: string]: number } {
+  const normalized = { ...DEFAULT_RATES, ...rates };
+  return normalized;
+}
+
 // 获取实时汇率
 export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
   const now = Date.now();
@@ -895,7 +910,7 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     if (response.ok) {
       const rates = await response.json();
       console.log('从直接API获取的汇率数据:', rates);
-      exchangeRatesCache = { ...rates, 'USD': 1 };
+      exchangeRatesCache = normalizeRates(rates);
       exchangeRatesTimestamp = now;
       return exchangeRatesCache;
     }
@@ -905,7 +920,7 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     if (response.ok) {
       const rates = await response.json();
       console.log('从原API获取的汇率数据:', rates);
-      exchangeRatesCache = { ...rates, 'USD': 1 };
+      exchangeRatesCache = normalizeRates(rates);
       exchangeRatesTimestamp = now;
       return exchangeRatesCache;
     }
@@ -916,38 +931,26 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
     
     if (data.rates) {
       // exchangerate.host返回的是以USD为基准的汇率，直接使用
-      const rates: { [key: string]: number } = { 'USD': 1 };
-    
-      // 直接使用汇率数据，无需转换
-      Object.entries(data.rates as Record<string, number>).forEach(([currency, rate]) => {
-        if (rate && typeof rate === 'number') {
-          rates[currency] = rate;
-        }
-      });
+      const rates: { [key: string]: number } = data.rates;
       
-      exchangeRatesCache = rates;
+      // 规范化：确保包含所有必需的货币
+      const normalizedRates = normalizeRates(rates);
+      
+      exchangeRatesCache = normalizedRates;
       exchangeRatesTimestamp = now;
       
-      console.log('汇率数据已更新:', rates);
-      return rates;
+      console.log('汇率数据已更新:', normalizedRates);
+      return normalizedRates;
     }
   } catch (error) {
     console.error('获取汇率失败:', error);
   }
 
   // 如果API调用失败，返回默认汇率（1 USD = X 外币）
-  const defaultRates = {
-    'USD': 1,
-    'HKD': 7.8,    // 1 USD = 7.8 HKD
-    'CNY': 7.3,    // 1 USD = 7.3 CNY  
-    'THB': 35.0,   // 1 USD = 35 THB
-    'JPY': 150.0   // 1 USD = 150 JPY
-  };
-  
-  // 更新缓存并返回
-  exchangeRatesCache = defaultRates;
+  // 更新缓存并返回（使用默认汇率）
+  exchangeRatesCache = DEFAULT_RATES;
   exchangeRatesTimestamp = Date.now();
-  return defaultRates;
+  return DEFAULT_RATES;
 }
 
 // 计算银行资产美元价值
