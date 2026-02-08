@@ -52,7 +52,7 @@ export function BankAssetTrend({ records, language = 'zh', currency = 'USD' }: B
   };
 
   // 准备图表数据
-  const chartData = records
+  const chartData = [...records]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map(record => {
       const totals = calculateBankAssetsByCurrency(record);
