@@ -270,9 +270,9 @@ export default function EditRecord() {
                 </label>
                 <div className="mt-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-900 dark:text-white">
                   ${(() => {
-                    const onChainTotal = ((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
-                    const cexTotal = ((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
-                    const bankTotal = ((Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {})).reduce((sum, asset) => sum + ((asset as any).value ?? (asset as any).amount ?? 0), 0)) as number;
+                    const onChainTotal = ((Array.isArray(record.onChainAssets) ? record.onChainAssets : Object.values(record.onChainAssets || {})).reduce((sum, asset) => sum + ((asset as any).totalValueUSD ?? 0), 0)) as number;
+                    const cexTotal = ((Array.isArray(record.cexAssets) ? record.cexAssets : Object.values(record.cexAssets || {})).reduce((sum, asset) => sum + ((asset as any).totalValueUSD ?? 0), 0)) as number;
+                    const bankTotal = ((Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {})).reduce((sum, asset) => sum + ((asset as any).valueUSD ?? 0), 0)) as number;
                     return (onChainTotal + cexTotal + bankTotal).toFixed(2);
                   })()}
                 </div>
@@ -749,6 +749,7 @@ export default function EditRecord() {
                       <option value="HKD">港币 (HKD)</option>
                       <option value="CNY">人民币 (CNY)</option>
                       <option value="THB">泰铢 (THB)</option>
+                      <option value="JPY">日元 (JPY)</option>
                     </select>
                   </div>
                 </div>

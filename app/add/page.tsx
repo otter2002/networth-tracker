@@ -718,6 +718,7 @@ export default function AddRecord() {
                       <option value="HKD">港币 (HKD)</option>
                       <option value="CNY">人民币 (CNY)</option>
                       <option value="THB">泰铢 (THB)</option>
+                      <option value="JPY">日元 (JPY)</option>
                     </select>
                   </div>
                 </div>

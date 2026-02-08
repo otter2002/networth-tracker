@@ -20,3 +20,11 @@
  ✓ Compiled in 60ms (822 modules)
  ✓ Compiled in 52ms (822 modules)
  ✓ Compiled in 94ms (822 modules)
+ ✓ Compiled in 80ms (822 modules)
+ ✓ Compiled in 50ms (822 modules)
+ ✓ Compiled in 61ms (822 modules)
+ GET /api/networth 200 in 1219ms
+ ✓ Compiled /api/networth/[id] in 53ms (168 modules)
+ GET /api/networth/23 200 in 1280ms
+ ✓ Compiled in 79ms (822 modules)
+ ✓ Compiled in 62ms (822 modules)

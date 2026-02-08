@@ -13,7 +13,8 @@ export default function ExchangeRateDisplay() {
     { code: 'USD', name: '美元' },
     { code: 'HKD', name: '港币' },
     { code: 'CNY', name: '人民币' },
-    { code: 'THB', name: '泰铢' }
+    { code: 'THB', name: '泰铢' },
+    { code: 'JPY', name: '日元' }
   ];
 
   const updateRates = async () => {
