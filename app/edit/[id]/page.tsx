@@ -513,6 +513,7 @@ export default function EditRecord() {
                       <option value="okx">OKX</option>
                       <option value="bybit">Bybit</option>
                       <option value="bitget">Bitget</option>
+                      <option value="gate">Gate</option>
                     </select>
                   </div>
                   <div>
@@ -687,7 +688,8 @@ export default function EditRecord() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">银行/券商</label>
-                    <select
+                    <input
+                      list={`bank-options-${index}`}
                       value={asset.institution}
                       onChange={(e) => {
                         const newAssets = [...(record.bankAssets || [])];
@@ -702,14 +704,16 @@ export default function EditRecord() {
                       }}
                       className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       style={{ colorScheme: 'light' }}
-                    >
+                      placeholder="选择或输入机构名称"
+                    />
+                    <datalist id={`bank-options-${index}`}>
                       <option value="za bank">ZA Bank</option>
                       <option value="hsbc hk">HSBC HK</option>
                       <option value="bkk bank">BKK Bank</option>
                       <option value="农业银行">农业银行</option>
                       <option value="民生银行">民生银行</option>
                       <option value="券商">券商</option>
-                    </select>
+                    </datalist>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">存款类型</label>
