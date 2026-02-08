@@ -704,11 +704,12 @@ export default function AddRecord() {
                       onChange={async (e) => {
                         const newAssets = [...formData.bankAssets];
                         newAssets[index].currency = e.target.value as BankAsset['currency'];
-                        // 获取实时汇率
-                        const exchangeRate = await getExchangeRateAsync(e.target.value);
-                        newAssets[index].exchangeRate = exchangeRate;
+                        // 获取实时汇率（格式：外币 per USD）
+                        const rateCurrencyPerUSD = await getExchangeRateAsync(e.target.value);
+                        // 转换为 USD per 外币 格式
+                        newAssets[index].exchangeRate = rateCurrencyPerUSD > 0 ? 1 / rateCurrencyPerUSD : 1;
                         // 重新计算美元价值
-                        newAssets[index].valueUSD = newAssets[index].amount * exchangeRate;
+                        newAssets[index].valueUSD = newAssets[index].amount * newAssets[index].exchangeRate;
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
                       className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -733,6 +734,7 @@ export default function AddRecord() {
                         const newAssets = [...formData.bankAssets];
                         const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                         newAssets[index].amount = value;
+                        // 使用已转换的 exchangeRate（USD per 外币）计算
                         newAssets[index].valueUSD = value * newAssets[index].exchangeRate;
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
