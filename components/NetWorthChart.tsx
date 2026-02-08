@@ -19,6 +19,9 @@ export function NetWorthChart({ records, currency = 'USD', language = 'zh' }: Ne
   } else if (currency === 'CNY') {
     const cnyRate = getExchangeRate('CNY');
     exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
+  } else if (currency === 'JPY') {
+    const jpyRate = getExchangeRate('JPY');
+    exchangeRate = jpyRate > 0 ? 1 / jpyRate : 1;
   }
   
   // 按日期升序排列用于图表显示
@@ -34,6 +37,7 @@ export function NetWorthChart({ records, currency = 'USD', language = 'zh' }: Ne
     let symbol = '$';
     if (currency === 'THB') symbol = '฿';
     else if (currency === 'CNY') symbol = '¥';
+    else if (currency === 'JPY') symbol = '¥';
     
     if (value >= 1000000) {
       return `${symbol}${(value / 1000000).toFixed(1)}M`;
@@ -61,6 +65,7 @@ export function NetWorthChart({ records, currency = 'USD', language = 'zh' }: Ne
             let symbol = '$';
             if (currency === 'THB') symbol = '฿';
             else if (currency === 'CNY') symbol = '¥';
+            else if (currency === 'JPY') symbol = '¥';
             return [`${symbol}${value.toLocaleString()}`, language === 'zh' ? '净资产' : 'สินทรัพย์สุทธิ'];
           }}
           labelFormatter={(label) => language === 'zh' ? `日期: ${label}` : `วันที่: ${label}`}

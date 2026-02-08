@@ -12,7 +12,7 @@ interface BankAssetTrendProps {
   currency?: Currency;
 }
 
-type BankCurrency = 'USD' | 'CNY' | 'THB' | 'HKD';
+type BankCurrency = 'USD' | 'CNY' | 'THB' | 'HKD' | 'JPY';
 
 export function BankAssetTrend({ records, language = 'zh', currency = 'USD' }: BankAssetTrendProps) {
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
@@ -40,7 +40,8 @@ export function BankAssetTrend({ records, language = 'zh', currency = 'USD' }: B
       'USD': 0,
       'CNY': 0,
       'THB': 0,
-      'HKD': 0
+      'HKD': 0,
+      'JPY': 0
     };
 
     (record.bankAssets || []).forEach(asset => {
@@ -60,7 +61,8 @@ export function BankAssetTrend({ records, language = 'zh', currency = 'USD' }: B
         USD: totals.USD,
         CNY: totals.CNY,
         THB: totals.THB,
-        HKD: totals.HKD
+        HKD: totals.HKD,
+        JPY: totals.JPY
       };
     });
 
@@ -68,13 +70,14 @@ export function BankAssetTrend({ records, language = 'zh', currency = 'USD' }: B
   const latest = chartData[chartData.length - 1];
   const previous = chartData.length > 1 ? chartData[chartData.length - 2] : null;
 
-  const currencies: BankCurrency[] = ['CNY', 'THB', 'HKD', 'USD'];
-  
-  const currencyInfo = {
-    'CNY': { name: '人民币', symbol: '¥', color: '#EF4444' },
-    'THB': { name: '泰铢', symbol: '฿', color: '#10B981' },
-    'HKD': { name: '港币', symbol: 'HK$', color: '#F59E0B' },
-    'USD': { name: '美元', symbol: '$', color: '#3B82F6' }
+  const currencies: BankCurrency[] = ['CNY', 'THB', 'HKD', 'USD', 'JPY'];
+
+  const currencyInfo: Record<BankCurrency, { name: string; symbol: string; color: string }> = {
+    'CNY': { name: language === 'zh' ? '人民币' : 'หยวน', symbol: '¥', color: '#EF4444' },
+    'THB': { name: language === 'zh' ? '泰铢' : 'บาท', symbol: '฿', color: '#10B981' },
+    'HKD': { name: language === 'zh' ? '港币' : 'ดอลลาร์ฮ่องกง', symbol: 'HK$', color: '#F59E0B' },
+    'USD': { name: language === 'zh' ? '美元' : 'ดอลลาร์', symbol: '$', color: '#3B82F6' },
+    'JPY': { name: language === 'zh' ? '日元' : 'เยน', symbol: '¥', color: '#8B5CF6' }
   };
 
   const formatValue = (value: number, curr: BankCurrency) => {

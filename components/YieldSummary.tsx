@@ -37,13 +37,17 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
   } else if (currency === 'CNY') {
     const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
     exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
+  } else if (currency === 'JPY') {
+    const jpyRate = exchangeRates['JPY'] || getExchangeRate('JPY');
+    exchangeRate = jpyRate > 0 ? 1 / jpyRate : 1;
   }
 
   const formatValue = (value: number) => {
     let symbol = '$';
     if (currency === 'THB') symbol = '฿';
     else if (currency === 'CNY') symbol = '¥';
-    
+    else if (currency === 'JPY') symbol = '¥';
+
     const convertedValue = value / exchangeRate;
     
     if (convertedValue >= 1000000) {
@@ -53,6 +57,22 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD' }: Yiel
     }
     return `${symbol}${convertedValue.toFixed(2)}`;
   };
+
+  // 非USD货币在汇率加载完成前显示加载状态，避免闪烁错误值
+  if (loading && currency !== 'USD') {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div className="p-5 animate-pulse">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-2" />
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

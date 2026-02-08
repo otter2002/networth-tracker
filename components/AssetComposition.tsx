@@ -42,6 +42,9 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
   } else if (currency === 'CNY') {
     const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
     exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
+  } else if (currency === 'JPY') {
+    const jpyRate = exchangeRates['JPY'] || getExchangeRate('JPY');
+    exchangeRate = jpyRate > 0 ? 1 / jpyRate : 1;
   }
   
   const data = breakdown.map(item => {
@@ -73,7 +76,8 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
     let symbol = '$';
     if (currency === 'THB') symbol = '฿';
     else if (currency === 'CNY') symbol = '¥';
-    
+    else if (currency === 'JPY') symbol = '¥';
+
     const convertedValue = value / exchangeRate;
     
     if (convertedValue >= 1000000) {

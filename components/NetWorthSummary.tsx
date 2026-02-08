@@ -67,6 +67,9 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
   } else if (currency === 'CNY') {
     const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
     exchangeRate = cnyRate > 0 ? 1 / cnyRate : 1;
+  } else if (currency === 'JPY') {
+    const jpyRate = exchangeRates['JPY'] || getExchangeRate('JPY');
+    exchangeRate = jpyRate > 0 ? 1 / jpyRate : 1;
   }
   const currentValue = latestValue / exchangeRate;
   const changeValue = change / exchangeRate;
@@ -75,6 +78,7 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
     let symbol = '$';
     if (currency === 'THB') symbol = '฿';
     else if (currency === 'CNY') symbol = '¥';
+    else if (currency === 'JPY') symbol = '¥';
     
     if (value >= 1000000) {
       return `${symbol}${(value / 1000000).toFixed(2)}M`;
@@ -88,6 +92,7 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
     let symbol = '$';
     if (currency === 'THB') symbol = '฿';
     else if (currency === 'CNY') symbol = '¥';
+    else if (currency === 'JPY') symbol = '¥';
     
     const absValue = Math.abs(value);
     if (absValue >= 1000000) {
