@@ -35,16 +35,18 @@ export function YieldSummary({ record, language = 'zh', currency = 'USD', yieldD
   let exchangeRate = 1;
   if (currency === 'THB') {
     const thbRate = exchangeRates['THB'] || getExchangeRate('THB');
-    // 确保汇率有效，避免除以0或无效值
-    const validRate = (thbRate && thbRate > 0 && isFinite(thbRate)) ? thbRate : 35;
+    // 确保汇率有效且在合理范围内 (20-50)
+    const validRate = (thbRate && thbRate > 20 && thbRate < 50) ? thbRate : 35;
     exchangeRate = 1 / validRate;
   } else if (currency === 'CNY') {
     const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
-    const validRate = (cnyRate && cnyRate > 0 && isFinite(cnyRate)) ? cnyRate : 7.3;
+    // 确保汇率有效且在合理范围内 (5-10)
+    const validRate = (cnyRate && cnyRate > 5 && cnyRate < 10) ? cnyRate : 7.3;
     exchangeRate = 1 / validRate;
   } else if (currency === 'JPY') {
     const jpyRate = exchangeRates['JPY'] || getExchangeRate('JPY');
-    const validRate = (jpyRate && jpyRate > 0 && isFinite(jpyRate)) ? jpyRate : 150;
+    // 确保汇率有效且在合理范围内 (100-200)
+    const validRate = (jpyRate && jpyRate > 100 && jpyRate < 200) ? jpyRate : 150;
     exchangeRate = 1 / validRate;
   }
 

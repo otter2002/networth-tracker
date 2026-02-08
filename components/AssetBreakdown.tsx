@@ -39,15 +39,15 @@ export function AssetBreakdown({ record, currency = 'USD', language = 'zh' }: As
   let exchangeRate = 1;
   if (currency === 'THB') {
     const thbRate = exchangeRates['THB'] || getExchangeRate('THB');
-    const validRate = (thbRate && thbRate > 0 && isFinite(thbRate)) ? thbRate : 35;
+    const validRate = (thbRate && thbRate > 20 && thbRate < 50) ? thbRate : 35;
     exchangeRate = 1 / validRate;
   } else if (currency === 'CNY') {
     const cnyRate = exchangeRates['CNY'] || getExchangeRate('CNY');
-    const validRate = (cnyRate && cnyRate > 0 && isFinite(cnyRate)) ? cnyRate : 7.3;
+    const validRate = (cnyRate && cnyRate > 5 && cnyRate < 10) ? cnyRate : 7.3;
     exchangeRate = 1 / validRate;
   } else if (currency === 'JPY') {
     const jpyRate = exchangeRates['JPY'] || getExchangeRate('JPY');
-    const validRate = (jpyRate && jpyRate > 0 && isFinite(jpyRate)) ? jpyRate : 150;
+    const validRate = (jpyRate && jpyRate > 100 && jpyRate < 200) ? jpyRate : 150;
     exchangeRate = 1 / validRate;
   }
 
