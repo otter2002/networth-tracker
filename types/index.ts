@@ -52,6 +52,7 @@ export interface BankPosition {
   amount: number; // 金额
   exchangeRate: number; // 汇率（对美元）
   valueUSD: number; // 美元价值（自动计算）
+  apr: number; // 年化收益率
 }
 
 // 银行和券商资产
@@ -60,6 +61,12 @@ export interface BankAsset {
   institution: 'za bank' | 'hsbc hk' | 'bkk bank' | '农业银行' | '民生银行' | '券商'; // 机构名称
   positions: BankPosition[]; // 仓位列表（不同存款类型/币种）
   totalValueUSD: number; // 机构总价值（各仓位美元价值之和）
+  // 计算得出的值
+  yieldValueUSD: number; // 生息仓位总价值
+  totalAPR: number;
+  dailyIncome: number;
+  monthlyIncome: number;
+  yearlyIncome: number;
 }
 
 // 净资产记录

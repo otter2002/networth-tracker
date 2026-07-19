@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { addNetWorthRecord, calculateWalletYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
+import { addNetWorthRecord, calculateWalletYield, calculateBankYield, getExchangeRate, getExchangeRateAsync } from '@/lib/data';
 import { ArrowLeft, Save, Plus, Trash2, Copy, History } from 'lucide-react';
 import Link from 'next/link';
 import ExchangeRateDisplay from '@/components/ExchangeRateDisplay';
@@ -169,7 +169,12 @@ export default function AddRecord() {
       id: Date.now().toString(),
       institution: 'za bank',
       positions: [],
-      totalValueUSD: 0
+      totalValueUSD: 0,
+      yieldValueUSD: 0,
+      totalAPR: 0,
+      dailyIncome: 0,
+      monthlyIncome: 0,
+      yearlyIncome: 0
     };
     setFormData(prev => ({
       ...prev,
@@ -701,7 +706,8 @@ export default function AddRecord() {
                           currency: 'USD',
                           amount: 0,
                           exchangeRate: 1,
-                          valueUSD: 0
+                          valueUSD: 0,
+                          apr: 0
                         };
                         newAssets[index].positions.push(newPosition);
                         newAssets[index].totalValueUSD = newAssets[index].positions.reduce((sum, p) => sum + p.valueUSD, 0);
@@ -715,7 +721,7 @@ export default function AddRecord() {
                   </div>
 
                   {asset.positions.map((position, posIndex) => (
-                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">存款类型</label>
                         <select
@@ -780,6 +786,23 @@ export default function AddRecord() {
                           placeholder="0.00"
                         />
                       </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">APR (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={position.apr || ''}
+                          onChange={(e) => {
+                            const newAssets = [...formData.bankAssets];
+                            const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                            newAssets[index].positions[posIndex].apr = value;
+                            setFormData(prev => ({ ...prev, bankAssets: newAssets }));
+                          }}
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                          style={{ colorScheme: 'light' }}
+                          placeholder="0.00"
+                        />
+                      </div>
                       <div className="flex items-end justify-between gap-2">
                         <div className="flex-1">
                           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">美元价值</label>
@@ -802,6 +825,38 @@ export default function AddRecord() {
                       </div>
                     </div>
                   ))}
+
+                  {/* 机构收益概览 */}
+                  {asset.positions.length > 0 && (
+                    <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded">
+                      <h5 className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-2">收益概览</h5>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">仓位总价值:</span>
+                          <span className="ml-1 font-medium">${(() => {
+                            const positionsTotal = asset.positions.reduce((sum, position) => sum + position.valueUSD, 0);
+                            return positionsTotal.toFixed(2);
+                          })()}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">生息价值:</span>
+                          <span className="ml-1 font-medium">${calculateBankYield(asset).yieldValueUSD.toFixed(2)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">总APR:</span>
+                          <span className="ml-1 font-medium">{calculateBankYield(asset).totalAPR.toFixed(2)}%</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">日收入:</span>
+                          <span className="ml-1 font-medium">${calculateBankYield(asset).dailyIncome.toFixed(2)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 dark:text-gray-400">年收入:</span>
+                          <span className="ml-1 font-medium">${calculateBankYield(asset).yearlyIncome.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <button

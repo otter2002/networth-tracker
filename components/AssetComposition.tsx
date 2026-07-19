@@ -125,8 +125,22 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
       }))
   );
 
+  // 收集银行/券商生息仓位（APR > 0）
+  const bankYieldingPositions = (record.bankAssets || []).flatMap(asset =>
+    (asset.positions || [])
+      .filter(position => position.apr > 0)
+      .map(position => ({
+        type: 'bank' as const,
+        walletRemark: asset.institution,
+        token: `${position.depositType} · ${position.currency}`,
+        valueUSD: position.valueUSD,
+        apr: position.apr,
+        dailyIncome: (position.valueUSD * position.apr) / 365 / 100
+      }))
+  );
+
   // 合并所有生息资产
-  const yieldingPositions = [...onChainYieldingPositions, ...cexYieldingPositions];
+  const yieldingPositions = [...onChainYieldingPositions, ...cexYieldingPositions, ...bankYieldingPositions];
 
   return (
     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
@@ -242,9 +256,15 @@ export function AssetComposition({ record, language = 'zh', currency = 'USD' }: 
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           position.type === 'onchain'
                             ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                            : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            : position.type === 'cex'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            : 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
                         }`}>
-                          {position.type === 'onchain' ? (language === 'zh' ? '链上' : 'บนเชน') : (language === 'zh' ? '交易所' : 'ตลาด')}
+                          {position.type === 'onchain'
+                            ? (language === 'zh' ? '链上' : 'บนเชน')
+                            : position.type === 'cex'
+                            ? (language === 'zh' ? '交易所' : 'ตลาด')
+                            : (language === 'zh' ? '银行' : 'ธนาคาร')}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">

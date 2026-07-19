@@ -73,6 +73,42 @@ export function calculateCEXYield(asset: CEXAsset): CEXAsset {
   };
 }
 
+// 计算单个银行/券商机构的收益
+export function calculateBankYield(asset: BankAsset): BankAsset {
+  let yieldValue = 0; // 生息仓位总价值
+  let totalDailyIncome = 0;
+  let totalYearlyIncome = 0;
+  let totalAPR = 0;
+
+  const totalValueUSD = (asset.positions || []).reduce((sum, position) => sum + position.valueUSD, 0);
+
+  if (asset.positions && asset.positions.length > 0) {
+    asset.positions.forEach(position => {
+      // 只有APR > 0的仓位才计算收益
+      if (position.apr > 0) {
+        yieldValue += position.valueUSD;
+        const dailyIncome = (position.valueUSD * position.apr) / 365 / 100;
+        const yearlyIncome = position.valueUSD * position.apr / 100;
+        totalDailyIncome += dailyIncome;
+        totalYearlyIncome += yearlyIncome;
+      }
+    });
+
+    // APR基于生息仓位计算
+    totalAPR = yieldValue > 0 ? (totalYearlyIncome / yieldValue) * 100 : 0;
+  }
+
+  return {
+    ...asset,
+    totalValueUSD,
+    yieldValueUSD: yieldValue,
+    totalAPR,
+    dailyIncome: totalDailyIncome,
+    monthlyIncome: totalDailyIncome * 30,
+    yearlyIncome: totalYearlyIncome
+  };
+}
+
 // 计算总收益
 export function calculateYield(record: NetWorthRecord): YieldCalculation {
   let totalValue = 0;
@@ -99,10 +135,13 @@ export function calculateYield(record: NetWorthRecord): YieldCalculation {
     });
   }
 
-  // 计算银行资产
+  // 计算银行资产收益
   if (record.bankAssets && record.bankAssets.length > 0) {
     record.bankAssets.forEach(asset => {
-      totalValue += asset.totalValueUSD;
+      const calculatedAsset = calculateBankYield(asset);
+      totalValue += calculatedAsset.totalValueUSD;
+      totalDailyYield += calculatedAsset.dailyIncome;
+      totalAnnualYield += calculatedAsset.yearlyIncome;
     });
   }
 
@@ -236,25 +275,40 @@ const initialData: NetWorthRecord[] = [
         id: '1',
         institution: '农业银行',
         positions: [
-          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 405128, exchangeRate: 0.138, valueUSD: 55907.66 }
+          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 405128, exchangeRate: 0.138, valueUSD: 55907.66, apr: 0 }
         ],
-        totalValueUSD: 55907.66
+        totalValueUSD: 55907.66,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '2',
         institution: '民生银行',
         positions: [
-          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127153, exchangeRate: 0.138, valueUSD: 17547.11 }
+          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127153, exchangeRate: 0.138, valueUSD: 17547.11, apr: 0 }
         ],
-        totalValueUSD: 17547.11
+        totalValueUSD: 17547.11,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '3',
         institution: 'bkk bank',
         positions: [
-          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2318990, exchangeRate: 0.028, valueUSD: 64931.72 }
+          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2318990, exchangeRate: 0.028, valueUSD: 64931.72, apr: 0 }
         ],
-        totalValueUSD: 64931.72
+        totalValueUSD: 64931.72,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       }
     ]
   },
@@ -349,25 +403,40 @@ const initialData: NetWorthRecord[] = [
         id: '1',
         institution: '农业银行',
         positions: [
-          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 404573, exchangeRate: 0.138, valueUSD: 55831.07 }
+          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 404573, exchangeRate: 0.138, valueUSD: 55831.07, apr: 0 }
         ],
-        totalValueUSD: 55831.07
+        totalValueUSD: 55831.07,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '2',
         institution: '民生银行',
         positions: [
-          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127153, exchangeRate: 0.138, valueUSD: 17547.11 }
+          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127153, exchangeRate: 0.138, valueUSD: 17547.11, apr: 0 }
         ],
-        totalValueUSD: 17547.11
+        totalValueUSD: 17547.11,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '3',
         institution: 'bkk bank',
         positions: [
-          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2315352, exchangeRate: 0.028, valueUSD: 64829.86 }
+          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2315352, exchangeRate: 0.028, valueUSD: 64829.86, apr: 0 }
         ],
-        totalValueUSD: 64829.86
+        totalValueUSD: 64829.86,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       }
     ]
   },
@@ -473,25 +542,40 @@ const initialData: NetWorthRecord[] = [
         id: '1',
         institution: '农业银行',
         positions: [
-          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 402339, exchangeRate: 0.138, valueUSD: 55522.78 }
+          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 402339, exchangeRate: 0.138, valueUSD: 55522.78, apr: 0 }
         ],
-        totalValueUSD: 55522.78
+        totalValueUSD: 55522.78,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '2',
         institution: '民生银行',
         positions: [
-          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127167, exchangeRate: 0.138, valueUSD: 17548.85 }
+          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127167, exchangeRate: 0.138, valueUSD: 17548.85, apr: 0 }
         ],
-        totalValueUSD: 17548.85
+        totalValueUSD: 17548.85,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '3',
         institution: 'bkk bank',
         positions: [
-          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2316880, exchangeRate: 0.028, valueUSD: 64872.64 }
+          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2316880, exchangeRate: 0.028, valueUSD: 64872.64, apr: 0 }
         ],
-        totalValueUSD: 64872.64
+        totalValueUSD: 64872.64,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       }
     ]
   },
@@ -597,25 +681,40 @@ const initialData: NetWorthRecord[] = [
         id: '1',
         institution: '农业银行',
         positions: [
-          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 401832, exchangeRate: 0.138, valueUSD: 55452.82 }
+          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 401832, exchangeRate: 0.138, valueUSD: 55452.82, apr: 0 }
         ],
-        totalValueUSD: 55452.82
+        totalValueUSD: 55452.82,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '2',
         institution: '民生银行',
         positions: [
-          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127167, exchangeRate: 0.138, valueUSD: 17549.05 }
+          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127167, exchangeRate: 0.138, valueUSD: 17549.05, apr: 0 }
         ],
-        totalValueUSD: 17549.05
+        totalValueUSD: 17549.05,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '3',
         institution: 'bkk bank',
         positions: [
-          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2316880, exchangeRate: 0.028, valueUSD: 64872.64 }
+          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2316880, exchangeRate: 0.028, valueUSD: 64872.64, apr: 0 }
         ],
-        totalValueUSD: 64872.64
+        totalValueUSD: 64872.64,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       }
     ]
   },
@@ -721,25 +820,40 @@ const initialData: NetWorthRecord[] = [
         id: '1',
         institution: '农业银行',
         positions: [
-          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 401832, exchangeRate: 0.138, valueUSD: 55452.82 }
+          { id: '1-1', depositType: '活期', currency: 'CNY', amount: 401832, exchangeRate: 0.138, valueUSD: 55452.82, apr: 0 }
         ],
-        totalValueUSD: 55452.82
+        totalValueUSD: 55452.82,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '2',
         institution: '民生银行',
         positions: [
-          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127167, exchangeRate: 0.138, valueUSD: 17549.05 }
+          { id: '2-1', depositType: '活期', currency: 'CNY', amount: 127167, exchangeRate: 0.138, valueUSD: 17549.05, apr: 0 }
         ],
-        totalValueUSD: 17549.05
+        totalValueUSD: 17549.05,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       },
       {
         id: '3',
         institution: 'bkk bank',
         positions: [
-          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2316880, exchangeRate: 0.028, valueUSD: 64872.64 }
+          { id: '3-1', depositType: '活期', currency: 'THB', amount: 2316880, exchangeRate: 0.028, valueUSD: 64872.64, apr: 0 }
         ],
-        totalValueUSD: 64872.64
+        totalValueUSD: 64872.64,
+        yieldValueUSD: 0,
+        totalAPR: 0,
+        dailyIncome: 0,
+        monthlyIncome: 0,
+        yearlyIncome: 0
       }
     ]
   }
@@ -750,57 +864,64 @@ export function normalizeBankAssets(bankAssets: any[] | undefined | null): BankA
   if (!Array.isArray(bankAssets)) return [];
 
   return bankAssets.map((asset: any) => {
+    let positions: BankPosition[];
+    let institution = asset.institution;
+
     // 已经是新格式（含positions数组）
     if (asset.positions && Array.isArray(asset.positions)) {
-      const positions: BankPosition[] = asset.positions.map((position: any, idx: number) => ({
+      positions = asset.positions.map((position: any, idx: number) => ({
         id: position.id || `${asset.id}-${idx + 1}`,
         depositType: position.depositType || '活期',
         currency: position.currency || 'USD',
         amount: position.amount || 0,
         exchangeRate: position.exchangeRate || 1,
-        valueUSD: position.valueUSD ?? (position.amount || 0) * (position.exchangeRate || 1)
+        valueUSD: position.valueUSD ?? (position.amount || 0) * (position.exchangeRate || 1),
+        apr: position.apr || 0
       }));
-      const totalValueUSD = typeof asset.totalValueUSD === 'number'
-        ? asset.totalValueUSD
-        : positions.reduce((sum, p) => sum + p.valueUSD, 0);
-      return { id: asset.id, institution: asset.institution, positions, totalValueUSD };
-    }
-
-    // 极旧格式：fiatCurrencies
-    if (asset.fiatCurrencies && !asset.currency) {
+    } else if (asset.fiatCurrencies && !asset.currency) {
+      // 极旧格式：fiatCurrencies
       const currency = Object.keys(asset.fiatCurrencies)[0];
       const amount = asset.fiatCurrencies[currency];
       const rateCurrencyPerUSD = getExchangeRate(currency);
       const exchangeRate = rateCurrencyPerUSD && rateCurrencyPerUSD > 0 ? 1 / rateCurrencyPerUSD : 1; // USD per unit
-      const valueUSD = amount * exchangeRate;
-      const institution = asset.institution === '农行' ? '农业银行' :
+      institution = asset.institution === '农行' ? '农业银行' :
         asset.institution === '民生' ? '民生银行' :
         asset.institution === '曼谷' ? 'bkk bank' : asset.institution;
-      return {
-        id: asset.id,
-        institution,
-        positions: [{ id: `${asset.id}-1`, depositType: '活期', currency: currency as any, amount, exchangeRate, valueUSD }],
-        totalValueUSD: valueUSD
-      };
-    }
-
-    // 旧的扁平格式（单一存款类型/币种直接挂在asset上）
-    const amount = asset.amount || 0;
-    const exchangeRate = asset.exchangeRate || 1;
-    const valueUSD = asset.valueUSD ?? amount * exchangeRate;
-    return {
-      id: asset.id,
-      institution: asset.institution,
-      positions: [{
+      positions = [{
+        id: `${asset.id}-1`,
+        depositType: '活期',
+        currency: currency as any,
+        amount,
+        exchangeRate,
+        valueUSD: amount * exchangeRate,
+        apr: 0
+      }];
+    } else {
+      // 旧的扁平格式（单一存款类型/币种直接挂在asset上）
+      const amount = asset.amount || 0;
+      const exchangeRate = asset.exchangeRate || 1;
+      positions = [{
         id: `${asset.id}-1`,
         depositType: asset.depositType || '活期',
         currency: asset.currency || 'USD',
         amount,
         exchangeRate,
-        valueUSD
-      }],
-      totalValueUSD: valueUSD
-    };
+        valueUSD: asset.valueUSD ?? amount * exchangeRate,
+        apr: asset.apr || 0
+      }];
+    }
+
+    return calculateBankYield({
+      id: asset.id,
+      institution,
+      positions,
+      totalValueUSD: 0,
+      yieldValueUSD: 0,
+      totalAPR: 0,
+      dailyIncome: 0,
+      monthlyIncome: 0,
+      yearlyIncome: 0
+    });
   });
 }
 
@@ -972,11 +1093,6 @@ export async function fetchExchangeRates(): Promise<{ [key: string]: number }> {
 // 计算银行仓位美元价值
 export function calculateBankAssetValue(position: BankPosition): number {
   return position.amount * position.exchangeRate;
-}
-
-// 计算银行机构总价值（各仓位美元价值之和）
-export function calculateBankAssetTotal(asset: BankAsset): number {
-  return (asset.positions || []).reduce((sum, position) => sum + position.valueUSD, 0);
 }
 
 // 获取汇率（同步版本，使用缓存）
