@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { netWorthRecords } from '@/lib/schema';
 import { desc } from 'drizzle-orm';
 import { NetWorthRecord } from '@/types';
+import { normalizeBankAssets } from '@/lib/data';
 
 // GET - 获取所有净资产记录 (Updated for Neon DB)
 export async function GET() {
@@ -19,7 +20,7 @@ export async function GET() {
       totalValue: typeof record.totalValue === 'string' ? parseFloat(record.totalValue) : record.totalValue,
       onChainAssets: record.onChainAssets as any || [],
       cexAssets: record.cexAssets as any || [],
-      bankAssets: record.bankAssets as any || []
+      bankAssets: normalizeBankAssets(record.bankAssets as any)
     }));
 
     return NextResponse.json(transformedRecords);

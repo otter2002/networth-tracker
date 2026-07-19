@@ -7,7 +7,7 @@ import { addNetWorthRecord, calculateWalletYield, getExchangeRate, getExchangeRa
 import { ArrowLeft, Save, Plus, Trash2, Copy, History } from 'lucide-react';
 import Link from 'next/link';
 import ExchangeRateDisplay from '@/components/ExchangeRateDisplay';
-import { OnChainAsset, CEXAsset, BankAsset, NetWorthRecord } from '@/types';
+import { OnChainAsset, CEXAsset, BankAsset, BankPosition, NetWorthRecord } from '@/types';
 
 export default function AddRecord() {
   const router = useRouter();
@@ -61,7 +61,11 @@ export default function AddRecord() {
 
     const newBankAssets = templateRecord.bankAssets.map(asset => ({
       ...asset,
-      id: generateNewId()
+      id: generateNewId(),
+      positions: asset.positions.map(pos => ({
+        ...pos,
+        id: generateNewId()
+      }))
     }));
 
     setFormData({
@@ -91,7 +95,7 @@ export default function AddRecord() {
       }, 0);
       
       const cexTotal = formData.cexAssets.reduce((sum, asset) => sum + asset.totalValueUSD, 0);
-      const bankTotal = formData.bankAssets.reduce((sum, asset) => sum + asset.valueUSD, 0);
+      const bankTotal = formData.bankAssets.reduce((sum, asset) => sum + asset.totalValueUSD, 0);
       const totalValue = onChainTotal + cexTotal + bankTotal;
 
       const record = {
@@ -164,11 +168,8 @@ export default function AddRecord() {
     const newAsset: BankAsset = {
       id: Date.now().toString(),
       institution: 'za bank',
-      depositType: '活期',
-      currency: 'USD',
-      amount: 0,
-      exchangeRate: 1,
-      valueUSD: 0
+      positions: [],
+      totalValueUSD: 0
     };
     setFormData(prev => ({
       ...prev,
@@ -654,7 +655,7 @@ export default function AddRecord() {
             </div>
             {formData.bankAssets.map((asset, index) => (
               <div key={asset.id} className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 mb-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">银行/券商</label>
                     <input
@@ -663,12 +664,6 @@ export default function AddRecord() {
                       onChange={(e) => {
                         const newAssets = [...formData.bankAssets];
                         newAssets[index].institution = e.target.value as BankAsset['institution'];
-                        // 如果是券商，自动设置为股票类型
-                        if (e.target.value === '券商') {
-                          newAssets[index].depositType = '股票';
-                          newAssets[index].currency = 'USD';
-                          newAssets[index].exchangeRate = 1;
-                        }
                         setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                       }}
                       className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -685,82 +680,137 @@ export default function AddRecord() {
                     </datalist>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">存款类型</label>
-                    <select
-                      value={asset.depositType}
-                      onChange={(e) => {
-                        const newAssets = [...formData.bankAssets];
-                        newAssets[index].depositType = e.target.value as BankAsset['depositType'];
-                        setFormData(prev => ({ ...prev, bankAssets: newAssets }));
-                      }}
-                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      style={{ colorScheme: 'light' }}
-                    >
-                      <option value="活期">活期</option>
-                      <option value="定期">定期</option>
-                      <option value="股票">股票</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">币种</label>
-                    <select
-                      value={asset.currency}
-                      onChange={async (e) => {
-                        const newAssets = [...formData.bankAssets];
-                        newAssets[index].currency = e.target.value as BankAsset['currency'];
-                        // 获取实时汇率（格式：外币 per USD）
-                        const rateCurrencyPerUSD = await getExchangeRateAsync(e.target.value);
-                        // 转换为 USD per 外币 格式
-                        newAssets[index].exchangeRate = rateCurrencyPerUSD > 0 ? 1 / rateCurrencyPerUSD : 1;
-                        // 重新计算美元价值
-                        newAssets[index].valueUSD = newAssets[index].amount * newAssets[index].exchangeRate;
-                        setFormData(prev => ({ ...prev, bankAssets: newAssets }));
-                      }}
-                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      style={{ colorScheme: 'light' }}
-                    >
-                      <option value="USD">美元 (USD)</option>
-                      <option value="HKD">港币 (HKD)</option>
-                      <option value="CNY">人民币 (CNY)</option>
-                      <option value="THB">泰铢 (THB)</option>
-                      <option value="JPY">日元 (JPY)</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">金额</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={asset.amount || ''}
-                      onChange={(e) => {
-                        const newAssets = [...formData.bankAssets];
-                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
-                        newAssets[index].amount = value;
-                        // 使用已转换的 exchangeRate（USD per 外币）计算
-                        newAssets[index].valueUSD = value * newAssets[index].exchangeRate;
-                        setFormData(prev => ({ ...prev, bankAssets: newAssets }));
-                      }}
-                      className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      style={{ colorScheme: 'light' }}
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">美元价值</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">总价值 (USD)</label>
                     <div className="mt-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-900 dark:text-white">
-                      ${asset.valueUSD.toFixed(2)}
+                      ${asset.totalValueUSD.toFixed(2)}
                     </div>
                   </div>
                 </div>
+
+                {/* 仓位管理 */}
+                <div className="mt-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">仓位管理</h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newAssets = [...formData.bankAssets];
+                        const newPosition: BankPosition = {
+                          id: Date.now().toString(),
+                          depositType: '活期',
+                          currency: 'USD',
+                          amount: 0,
+                          exchangeRate: 1,
+                          valueUSD: 0
+                        };
+                        newAssets[index].positions.push(newPosition);
+                        newAssets[index].totalValueUSD = newAssets[index].positions.reduce((sum, p) => sum + p.valueUSD, 0);
+                        setFormData(prev => ({ ...prev, bankAssets: newAssets }));
+                      }}
+                      className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      添加仓位
+                    </button>
+                  </div>
+
+                  {asset.positions.map((position, posIndex) => (
+                    <div key={position.id} className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">存款类型</label>
+                        <select
+                          value={position.depositType}
+                          onChange={(e) => {
+                            const newAssets = [...formData.bankAssets];
+                            newAssets[index].positions[posIndex].depositType = e.target.value as BankPosition['depositType'];
+                            setFormData(prev => ({ ...prev, bankAssets: newAssets }));
+                          }}
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                          style={{ colorScheme: 'light' }}
+                        >
+                          <option value="活期">活期</option>
+                          <option value="定期">定期</option>
+                          <option value="股票">股票</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">币种</label>
+                        <select
+                          value={position.currency}
+                          onChange={async (e) => {
+                            const newAssets = [...formData.bankAssets];
+                            const pos = newAssets[index].positions[posIndex];
+                            pos.currency = e.target.value as BankPosition['currency'];
+                            // 获取实时汇率（格式：外币 per USD）
+                            const rateCurrencyPerUSD = await getExchangeRateAsync(e.target.value);
+                            // 转换为 USD per 外币 格式
+                            pos.exchangeRate = rateCurrencyPerUSD > 0 ? 1 / rateCurrencyPerUSD : 1;
+                            pos.valueUSD = pos.amount * pos.exchangeRate;
+                            newAssets[index].totalValueUSD = newAssets[index].positions.reduce((sum, p) => sum + p.valueUSD, 0);
+                            setFormData(prev => ({ ...prev, bankAssets: newAssets }));
+                          }}
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                          style={{ colorScheme: 'light' }}
+                        >
+                          <option value="USD">美元 (USD)</option>
+                          <option value="HKD">港币 (HKD)</option>
+                          <option value="CNY">人民币 (CNY)</option>
+                          <option value="THB">泰铢 (THB)</option>
+                          <option value="JPY">日元 (JPY)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">金额</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={position.amount || ''}
+                          onChange={(e) => {
+                            const newAssets = [...formData.bankAssets];
+                            const pos = newAssets[index].positions[posIndex];
+                            const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                            pos.amount = value;
+                            // 使用已转换的 exchangeRate（USD per 外币）计算
+                            pos.valueUSD = value * pos.exchangeRate;
+                            newAssets[index].totalValueUSD = newAssets[index].positions.reduce((sum, p) => sum + p.valueUSD, 0);
+                            setFormData(prev => ({ ...prev, bankAssets: newAssets }));
+                          }}
+                          className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                          style={{ colorScheme: 'light' }}
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <div className="flex items-end justify-between gap-2">
+                        <div className="flex-1">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">美元价值</label>
+                          <div className="mt-1 px-2 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
+                            ${position.valueUSD.toFixed(2)}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newAssets = [...formData.bankAssets];
+                            newAssets[index].positions.splice(posIndex, 1);
+                            newAssets[index].totalValueUSD = newAssets[index].positions.reduce((sum, p) => sum + p.valueUSD, 0);
+                            setFormData(prev => ({ ...prev, bankAssets: newAssets }));
+                          }}
+                          className="text-red-600 hover:text-red-800 text-xs mb-2"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
                 <button
                   type="button"
                   onClick={() => {
                     const newAssets = formData.bankAssets.filter((_, i) => i !== index);
                     setFormData(prev => ({ ...prev, bankAssets: newAssets }));
                   }}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-red-600 hover:text-red-800 mt-3"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

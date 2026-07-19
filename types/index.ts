@@ -44,15 +44,22 @@ export interface CEXAsset {
   yearlyIncome: number;
 }
 
-// 银行和券商资产
-export interface BankAsset {
+// 银行仓位（存款/持仓明细）
+export interface BankPosition {
   id: string;
-  institution: 'za bank' | 'hsbc hk' | 'bkk bank' | '农业银行' | '民生银行' | '券商'; // 机构名称
   depositType: '活期' | '定期' | '股票'; // 存款类型
   currency: 'HKD' | 'CNY' | 'USD' | 'THB' | 'JPY'; // 币种
   amount: number; // 金额
   exchangeRate: number; // 汇率（对美元）
   valueUSD: number; // 美元价值（自动计算）
+}
+
+// 银行和券商资产
+export interface BankAsset {
+  id: string;
+  institution: 'za bank' | 'hsbc hk' | 'bkk bank' | '农业银行' | '民生银行' | '券商'; // 机构名称
+  positions: BankPosition[]; // 仓位列表（不同存款类型/币种）
+  totalValueUSD: number; // 机构总价值（各仓位美元价值之和）
 }
 
 // 净资产记录

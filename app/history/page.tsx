@@ -186,7 +186,7 @@ export default function HistoryPage() {
                       {formatValue(
                         (Array.isArray(record.bankAssets) ? record.bankAssets : Object.values(record.bankAssets || {}))
                           .reduce((sum: number, asset: any) => {
-                            const value = asset.valueUSD ?? 0;
+                            const value = asset.totalValueUSD ?? 0;
                             const numValue = typeof value === 'string' ? parseFloat(value) || 0 : (value as number);
                             return sum + numValue;
                           }, 0)
@@ -240,9 +240,9 @@ export default function HistoryPage() {
                           <div key={asset.id} className="bg-gray-50 dark:bg-gray-700 rounded p-3">
                             <div className="text-sm font-medium text-gray-900 dark:text-white">{asset.institution}</div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {asset.depositType} - {asset.currency}
+                              {(asset.positions || []).map(p => `${p.depositType}-${p.currency}`).join(', ')}
                             </div>
-                            <div className="text-sm text-purple-600 dark:text-purple-400">{formatValue(asset.valueUSD)}</div>
+                            <div className="text-sm text-purple-600 dark:text-purple-400">{formatValue(asset.totalValueUSD)}</div>
                           </div>
                         ))}
                       </div>

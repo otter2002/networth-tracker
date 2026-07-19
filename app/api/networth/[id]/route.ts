@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { netWorthRecords } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
+import { normalizeBankAssets } from '@/lib/data';
 
 // GET - 获取单个净资产记录
 export async function GET(
@@ -19,7 +20,10 @@ export async function GET(
       return NextResponse.json({ error: 'Record not found' }, { status: 404 });
     }
 
-    return NextResponse.json(record[0]);
+    return NextResponse.json({
+      ...record[0],
+      bankAssets: normalizeBankAssets(record[0].bankAssets as any)
+    });
   } catch (error) {
     console.error('Error fetching net worth record:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

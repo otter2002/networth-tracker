@@ -45,7 +45,9 @@ export function BankAssetTrend({ records, language = 'zh', currency = 'USD' }: B
     };
 
     (record.bankAssets || []).forEach(asset => {
-      currencyTotals[asset.currency] = (currencyTotals[asset.currency] || 0) + asset.amount;
+      (asset.positions || []).forEach(position => {
+        currencyTotals[position.currency] = (currencyTotals[position.currency] || 0) + position.amount;
+      });
     });
 
     return currencyTotals;

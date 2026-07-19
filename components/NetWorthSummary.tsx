@@ -37,7 +37,7 @@ export function NetWorthSummary({ records, currency = 'USD', language = 'zh' }: 
   const calculateActualNetWorth = (record: NetWorthRecord) => {
     const onChainTotal = (record.onChainAssets || []).reduce((sum, asset) => sum + (asset.totalValueUSD || 0), 0);
     const cexTotal = (record.cexAssets || []).reduce((sum, asset) => sum + (asset.totalValueUSD || 0), 0);
-    const bankTotal = (record.bankAssets || []).reduce((sum, asset) => sum + (asset.valueUSD || 0), 0);
+    const bankTotal = (record.bankAssets || []).reduce((sum, asset) => sum + (asset.totalValueUSD || 0), 0);
     const total = onChainTotal + cexTotal + bankTotal;
     
     return total;
